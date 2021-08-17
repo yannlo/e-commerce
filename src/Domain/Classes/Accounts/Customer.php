@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Classes\Account;
-use App\Classes\Account\Exceptions\CustomerException;
+namespace App\Domain\Classes\Accounts;
+use App\Domain\Classes\Account\Exceptions\CustomerException;
 
 class Customer extends DefaultAccount
 {

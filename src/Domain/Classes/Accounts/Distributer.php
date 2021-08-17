@@ -1,12 +1,12 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Classes\Account;
-use App\Classes\Account\Exceptions\DistributerException;
+namespace App\Domain\Classes\Accounts;
+use App\Domain\Classes\Account\Exceptions\DistributerException;
 
 class Distributer extends DefaultAccount
 {
-    use \App\Traits\Hydration;
+    use \App\Domain\Traits\Hydration;
 
     private string $nameDistib;
     private string $description;

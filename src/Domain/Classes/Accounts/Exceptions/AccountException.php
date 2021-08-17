@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Classes\Account\Exceptions;
+namespace App\Domain\Classes\Account\Exceptions;
 
 class AccountException extends \Exception
 {}

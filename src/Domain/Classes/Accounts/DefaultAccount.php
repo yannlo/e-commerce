@@ -1,13 +1,13 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Classes\Account;
-use App\Classes\Account\Exceptions\AccountException;
+namespace App\Domain\Classes\Accounts;
+use App\Domain\Classes\Account\Exceptions\AccountException;
 
 abstract class DefaultAccount
 {
 
-    use \App\Traits\Hydration;
+    use \App\Domain\Traits\Hydration;
 
     protected int $id;
     protected string $email;

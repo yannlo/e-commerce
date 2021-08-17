@@ -1,17 +1,17 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Classes;
-use App\Classes\OthersException\ItemException;
+namespace App\Domain\Classes;
+use App\Domain\Classes\OthersException\ItemException;
 
 class Item 
 {
-    use \App\Traits\Hydration;
+    use \App\Domain\Traits\Hydration;
 
-    private int $id;
-    private string $itemName;
-    private int $price;
-    private int $idDistrib;
+    private int $id=0;
+    private string $itemName="";
+    private int $price=0;
+    private int $idDistrib=0;
 
     public function __construct(array $data)
     {
