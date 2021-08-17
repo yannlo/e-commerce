@@ -7,9 +7,7 @@ class itemViews
 {
     public static function item(array $data=[]): void
     {
-        echo"<pre>"; 
-        var_dump($data);
-        echo"</pre>";
+
         ob_start();
         ?>
         <h1> Bienvenue sur la page abidjan-style </h1>
