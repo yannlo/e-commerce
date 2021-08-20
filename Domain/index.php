@@ -1,7 +1,9 @@
 <?php 
 
-require_once 'vendor/autoload.php';
-require_once 'config/config.php';
+require_once '../vendor/autoload.php';
+require_once '../config/config.php';
+
+
 
 use App\Controllers\Account\Classes\{
     CustomerController,
@@ -17,21 +19,22 @@ use App\Views\Generals\ErrorViews;
 
 $router = new AltoRouter();
 
+$router -> addMatchTypes(['slh'=>'[/]?$']);
 
 // home
 $router->map('GET','/', function(){
-    echo "Page d'accueil";
+    CustomerController::index();
 });
 
 
 // router items
-$router->map('GET','/item', function(){
+$router->map('GET','/item[slh]', function(){
 
     CustomerController::index();
 
 });
 
-$router->map('GET','/item/[*:slug]-[i:id]?', function($slug,$id){
+$router->map('GET','/item/[*:slug]-[i:id]?[slh]', function($slug,$id){
 
     $name = preg_replace('/-/',' ', $slug);	
     $item = new Item(["id"=>(int)$id, "itemName"=>"$name","price"=>5000]);
@@ -40,58 +43,52 @@ $router->map('GET','/item/[*:slug]-[i:id]?', function($slug,$id){
 
 
 // router distributer
-$router->map('GET','/distributer', function(){
+$router->map('GET','/distributer[slh]', function(){
 
     DistributerController::login();
     
 });
 
-$router->map('GET','/distributer/[a:page]',function($page){
+$router->map('GET','/distributer/[a:page][slh]',function($page){
 
-    try
-    {
+    if(!method_exists(new DistributerController,$page)){
+        ErrorViews::error_404();
+
+    }else{
+
         DistributerController::$page();
     }
 
-    catch(Exception $e)
-    {
-        echo $e->getMessage();
-        ErrorViews::error_404();
-    }
 });
 
+
 // router customer
-$router->map('GET','/customer', function(){
+$router->map('GET','/customer[slh]', function(){
 
     CustomerController::index();
 
 });
 
-$router->map('GET','/customer/[a:page]',function($page){
+$router->map('GET','/customer/[a:page][slh]',function($page){
 
-    try
-    {
+    if(!method_exists(new CustomerController,$page)){
+        ErrorViews::error_404();
+        
+    }else{
+
         CustomerController::$page();
     }
 
-    catch(Exception $e)
-    {
-        echo $e->getMessage();
-        ErrorViews::error_404();
-    }
+
 });
 
 
-// router error
-
-// $router->map('GET','/[*]',function(){
-//     ErrorViews::error_404();
-// });
-
 $match = $router->match();
 
-if($match!==null){
+if(is_array($match)){
     call_user_func_array($match['target'],$match['params']);
+}else{
+    ErrorViews::error_404();
 }
 
 
