@@ -12,84 +12,82 @@ use App\Controllers\ItemController;
 use App\Domain\Classes\Item;
 use App\Views\Generals\ErrorViews;
 
-if(isset($_GET['section'])){
-    switch($_GET['section']){
-
-        case 'item':
-            if(!isset($_GET['page']))
-            {
-                CustomerController::index();
-                break;
-            }
-            
-            if($_GET['page']!=="item")
-            {
-                ErrorViews::error_404();
-                break;
-            }
-
-            $item = new Item(["id"=>1, "itemName"=>"t-shirt","price"=>5000]);
-            ItemController::Item($item);
-            
-            break;
 
 
-        case 'distributer':
-            if(!isset($_GET['page']))
-            {
-                DistributerController::login();
-                break;
-            }
 
-            $method = $_GET['page'];
-
-            try
-            {
-                DistributerController::$method();
-            }
-
-            catch(Exception $e)
-            {
-                echo $e->getMessage();
-                ErrorViews::error_404();
-            }
-
-            break;
+$router = new AltoRouter();
 
 
-        case 'customer':
-            if(!isset($_GET['page']))
-            {
-                CustomerController::login();
-                break;
-            }
+// home
+$router->map('GET','/', function(){
+    echo "Page d'accueil";
+});
 
-            $method = $_GET['page'];
 
-            try
-            {
-                CustomerController::$method();
-            }
+// router items
+$router->map('GET','/item', function(){
 
-            catch(Exception $e)
-            {
-                echo $e->getMessage();
-                ErrorViews::error_404();
-            }
+    CustomerController::index();
 
-            break;
+});
 
-        default:
+$router->map('GET','/item/[*:slug]-[i:id]?', function($slug,$id){
 
-            ErrorViews::error_404();
-            break;
+    $name = preg_replace('/-/',' ', $slug);	
+    $item = new Item(["id"=>(int)$id, "itemName"=>"$name","price"=>5000]);
+    ItemController::Item($item);
+});
 
+
+// router distributer
+$router->map('GET','/distributer', function(){
+
+    DistributerController::login();
+    
+});
+
+$router->map('GET','/distributer/[a:page]',function($page){
+
+    try
+    {
+        DistributerController::$page();
     }
+
+    catch(Exception $e)
+    {
+        echo $e->getMessage();
+        ErrorViews::error_404();
+    }
+});
+
+// router customer
+$router->map('GET','/customer', function(){
+
+    CustomerController::index();
+
+});
+
+$router->map('GET','/customer/[a:page]',function($page){
+
+    try
+    {
+        CustomerController::$page();
+    }
+
+    catch(Exception $e)
+    {
+        echo $e->getMessage();
+        ErrorViews::error_404();
+    }
+});
+
+$match = $router->match();
+
+if($match!==null){
+    call_user_func_array($match['target'],$match['params']);
 }
-else
-{
-    ErrorViews::error_404();
-}
+
+
 
 exit();
 
