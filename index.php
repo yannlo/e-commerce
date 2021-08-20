@@ -3,14 +3,17 @@
 require_once 'vendor/autoload.php';
 require_once 'config/config.php';
 
-use App\Controllers\Account\Classes\CustomerController;
-use App\Controllers\Account\Classes\DistributerController;
+use App\Controllers\Account\Classes\{
+    CustomerController,
+    DistributerController
+};
 use App\Controllers\ItemController;
 
 use App\Domain\Classes\Item;
+use App\Views\Generals\ErrorViews;
 
-if(isset($_GET['action'])){
-    switch($_GET['action']){
+if(isset($_GET['section'])){
+    switch($_GET['section']){
 
         case 'item':
             if(!isset($_GET['page']))
@@ -21,7 +24,7 @@ if(isset($_GET['action'])){
             
             if($_GET['page']!=="item")
             {
-                CustomerController::index();
+                ErrorViews::error_404();
                 break;
             }
 
@@ -48,7 +51,7 @@ if(isset($_GET['action'])){
             catch(Exception $e)
             {
                 echo $e->getMessage();
-                DistributerController::login();
+                ErrorViews::error_404();
             }
 
             break;
@@ -71,21 +74,21 @@ if(isset($_GET['action'])){
             catch(Exception $e)
             {
                 echo $e->getMessage();
-                CustomerController::index();
+                ErrorViews::error_404();
             }
 
             break;
 
         default:
 
-            CustomerController::index();
+            ErrorViews::error_404();
             break;
 
     }
 }
 else
 {
-    CustomerController::index();
+    ErrorViews::error_404();
 }
 
 exit();

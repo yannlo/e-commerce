@@ -3,10 +3,11 @@
 namespace App\Controllers\Account\Classes;
 
 
+use App\Views\Generals\ErrorViews;
 use App\Models\Account\DistributerModels;
+use  App\Domain\Classes\Accounts\DefaultAccount;
 use  App\Views\Account\Classes\DistributerViews;
 use App\Controllers\Account\Interfaces\accountInterface;
-use  App\Domain\Classes\Accounts\DefaultAccount;
 
 class DistributerController implements AccountInterface
 {

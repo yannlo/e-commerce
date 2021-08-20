@@ -12,5 +12,8 @@
             "email": "73764168+yannlo@users.noreply.github.com"
         }
     ],
-    "require": {}
+    "require": {
+        "altorouter/altorouter": "^2.0",
+        "symfony/var-dumper": "^5.3"
+    }
 }

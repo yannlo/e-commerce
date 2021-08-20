@@ -3,6 +3,7 @@
 namespace App\Controllers\Account\Classes;
 
 
+use App\Views\Generals\ErrorViews;
 use App\Models\Account\CustomerModels;
 use  App\Views\Account\Classes\CustomerViews;
 use App\Domain\Classes\Accounts\DefaultAccount;
@@ -29,5 +30,6 @@ class CustomerController implements accountInterface
     {
         CustomerViews::account();
     }
+
 
 }
