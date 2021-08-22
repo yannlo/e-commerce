@@ -2,7 +2,7 @@
 
 namespace App\Models\Tools;
 
-class DB_Connect
+class ConnectDB
 {
     private static $instancePDO;
 

@@ -43,11 +43,7 @@ class Item
     //SETTERS
     public function setId($id): void
     {
-        if(!is_int($id))
-        {
-            throw new ItemException("l'id n'est pas un entier");
-            return;
-        }
+        $id = (int) $id;
 
         if($id <=0)
         {
@@ -73,11 +69,7 @@ class Item
 
     public function setPrice($price): void
     {
-        if(!is_int($price))
-        {
-            throw new ItemException("le prix n'est pas un entier");
-            return;
-        }
+        $price = (int) $price;
 
         if($price <=0)
         {
@@ -90,11 +82,7 @@ class Item
 
     public function setIdDistrib($idDistrib): void
     {
-        if(!is_int($idDistrib))
-        {
-            throw new ItemException("l'id du distributeur n'est pas un entier");
-            return;
-        }
+        $idDistrib = (int) $idDistrib;
 
         if($idDistrib <=0)
         {
@@ -104,6 +92,13 @@ class Item
 
         $this-> idDistrib = $idDistrib;
     }
+
+
+    public function getPriceFormat(string $money= "Fcfa"): string
+    {
+        return number_format((float) $this-> price(),0,'',' '). " ".$money;
+    }
+    
 
 
 }

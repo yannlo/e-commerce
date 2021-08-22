@@ -4,11 +4,14 @@ namespace App\Views\Generals;
 
 class ErrorViews
 {
-    public static function error_404(){
+    public static function error_404($page){
         ob_start();
         ?>
         <h1> Page non trouvé </h1>
-
+        <?= $page; ?>
+        <?php dump($_SERVER)?>
+        <?php dump($_GET)?>
+        <?php dump($_POST)?>
         <?php
         $content= ob_get_clean();
 

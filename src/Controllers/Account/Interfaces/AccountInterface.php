@@ -2,7 +2,6 @@
 
 namespace App\Controllers\Account\Interfaces;
 
-use App\Domain\Classes\Accounts\DefaultAccount;
 use App\Controllers\Generals\GeneralControllerInterface;
 
 interface AccountInterface extends GeneralControllerInterface

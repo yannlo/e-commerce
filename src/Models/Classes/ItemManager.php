@@ -3,7 +3,6 @@
 namespace App\Models\Classes;
 
 use \App\Domain\Classes\Item;
-use \App\Models\Tools\Connect_DB;
 
 
 class ItemManager

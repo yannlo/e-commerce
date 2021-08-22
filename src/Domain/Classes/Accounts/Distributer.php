@@ -8,18 +8,19 @@ class Distributer extends DefaultAccount
 {
     use \App\Domain\Traits\Hydration;
 
-    private string $nameDistib;
-    private string $description;
+    private string $nameDistrib="";
+    private string $description="";
 
     // constructor
     public function __construct(array $data){
+        parent::__construct($data);
         $this->hydrate($data);
     }
 
     // GETTERS
-    public function nameDistib(): string
+    public function nameDistrib(): string
     {
-        return $this->nameDistib;
+        return $this->nameDistrib;
     }
 
     public function description(): string
@@ -28,17 +29,16 @@ class Distributer extends DefaultAccount
     }
 
     //SETTERS
-    public function setNameDistib($name)
+    public function setNameDistrib($name)
     {
         $name= (string) $name;
-
         if(strlen($name)<4)
         {
             throw new DistributerException("le nom saisi ne contient pas plus de 3 caracteres");
             return; 
         }
         
-        $this->name = $name;
+        $this->nameDistrib = $name;
 
     }
 

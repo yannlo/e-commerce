@@ -25,7 +25,7 @@ class DistributerManager
         $request = $this -> db -> prepare("SELECT * FROM distributers  WHERE id = :id");
         try{
         $request ->execute(array(
-            "id" => $id,
+            "id" => htmlspecialchars($id)
         ));
         return new Distributer($request->fetch(\PDO::FETCH_ASSOC));
         }
@@ -38,15 +38,15 @@ class DistributerManager
 
     public function add(Distributer $distributer): bool
     {
-        $request = $this -> db -> prepare("INSERT INTO distributers (id, nameDistib, email, password, description) VALUES (:id, :nameDistib, :email, :password, :description)");
+        $request = $this -> db -> prepare("INSERT INTO distributers (id, nameDistrib, email, password, description) VALUES (:id, :nameDistrib, :email, :password, :description)");
         try
         {
             $request ->execute(array(
-                "id" => $distributer-> id(),
-                "nameDistib" => $distributer -> nameDistib(),
-                "email" => $distributer -> email(),
-                "password" => $distributer -> password(),
-                "description" => $distributer -> description()
+                "id" => htmlspecialchars($distributer-> id()),
+                "nameDistrib" => htmlspecialchars($distributer -> nameDistrib()),
+                "email" => htmlspecialchars($distributer -> email()),
+                "password" => password_hash($distributer -> password(),PASSWORD_DEFAULT),
+                "description" => htmlspecialchars($distributer -> description())
             ));
 
             return true;
@@ -60,15 +60,15 @@ class DistributerManager
 
     public function update(Distributer $distributer): bool
     {
-        $request = $this -> db -> prepare("UPDATE distributers SET nameDistib = :nameDistib, email= :email, password=:password, description = :description WHERE id = :id");
+        $request = $this -> db -> prepare("UPDATE distributers SET nameDistrib = :nameDistrib, email= :email, password=:password, description = :description WHERE id = :id");
         try
         {
             $request ->execute(array(
-                "id" => $distributer-> id(),
-                "nameDistib" => $distributer -> nameDistib(),
-                "email" => $distributer -> email(),
-                "password" => $distributer -> password(),
-                "description" => $distributer -> description()
+                "id" => htmlspecialchars($distributer-> id()),
+                "nameDistrib" => htmlspecialchars($distributer -> nameDistrib()),
+                "email" => htmlspecialchars($distributer -> email()),
+                "password" => password_hash( $distributer -> password(),PASSWORD_DEFAULT),
+                "description" => htmlspecialchars($distributer -> description())
             ));
 
             return true;
@@ -96,5 +96,53 @@ class DistributerManager
             echo $e -> getMessage();
             return false;
         }
+    }
+    public function verify_email(Distributer $distributer)
+    {
+            
+        $request = $this -> db -> prepare("SELECT * FROM distributers  WHERE email = :email");
+        $request ->execute(array(
+            "email" => $distributer-> email()
+        ));
+        $count=$request->rowCOUNT();
+        if($count==0){
+            dd($count);
+            return false; 
+        }
+        
+        $table = array();
+        while($data = $request->fetch())
+        {
+            $table[] = new Distributer($data);
+        }
+        return $table;
+    }
+
+    private function verify_password(array $distributers,Distributer $distributer){
+        foreach($distributers as $distributer_found){
+            if( !password_verify($distributer->password(), $distributer_found->password()) ){
+                return["error"=>"password","message"=>"password invalide"];
+            }
+            else{
+                return $distributer_found;
+            }
+        }
+    }
+
+    public function distributer_verify(Distributer $distributer)
+    {
+        $table = $this -> verify_email($distributer);
+        if( $table == false){
+            return ["error"=>"email","message"=>"email invalide"];    
+        }
+
+        $distributer_founded = $this->verify_password($table, $distributer);
+        if(!is_object($distributer_founded))
+        {
+            return ["error"=>"password","message"=>"password invalide"];    
+        }
+
+        return $distributer_founded;
+
     }
 }

@@ -22,7 +22,7 @@ class CustomerManager
 
     public function getOnce(int $id): Customer|bool
     {
-        $request = $this -> db -> prepare("SELECT * FROM customers(id)  WHERE id = :id");
+        $request = $this -> db -> prepare("SELECT * FROM customers  WHERE id = :id");
         try{
         $request ->execute(array(
             "id" => $id,
@@ -43,10 +43,10 @@ class CustomerManager
         {
             $request ->execute(array(
                 "id" => $customer-> id(),
-                "firstName" => $customer -> firstName(),
-                "lastName" => $customer -> lastName(),
-                "email" => $customer -> email(),
-                "password" => $customer -> password()
+                "firstName" => htmlspecialchars( $customer -> firstName()),
+                "lastName" => htmlspecialchars($customer -> lastName()),
+                "email" => htmlspecialchars($customer -> email()),
+                "password" => password_hash ($customer -> password(),PASSWORD_DEFAULT)
             ));
 
             return true;
@@ -64,11 +64,11 @@ class CustomerManager
         try
         {
             $request ->execute(array(
-                "id" => $customer-> id(),
-                "firstName" => $customer -> firstName(),
-                "lastName" => $customer -> lastName(),
-                "email" => $customer -> email(),
-                "password" => $customer -> password()
+                "id" =>  $customer-> id(),
+                "firstName" => htmlspecialchars($customer -> firstName()),
+                "lastName" =>htmlspecialchars($customer -> lastName()),
+                "email" =>htmlspecialchars( $customer -> email()),
+                "password" =>password_hash ($customer -> password(),PASSWORD_DEFAULT)
             ));
 
             return true;
@@ -97,5 +97,54 @@ class CustomerManager
             return false;
         }
     }
+
+    public function verify_email(Customer $customer)
+    {
+        $request = $this -> db -> prepare("SELECT * FROM customers  WHERE email = :email");
+        $request ->execute(array(
+            "email" => $customer-> email()
+        ));
+        $count=$request->rowCOUNT();
+        if($count==0){
+
+            return false; 
+        }
+        
+        $table = array();
+        while($data = $request->fetch())
+        {
+            $table[] = new Customer($data);
+        }
+        return $table;
+    }
+
+    private function verify_password(array $customers,Customer $customer){
+        foreach($customers as $customer_found){
+            if( !password_verify($customer->password(), $customer_found->password()) ){
+                return["error"=>"password","message"=>"password invalide"];
+            }
+            else{
+                return $customer_found;
+            }
+        }
+    }
+
+    public function customer_verify(Customer $customer)
+    {
+        $table = $this -> verify_email($customer);
+        if( $table == false){
+            return ["error"=>"email","message"=>"email invalide"];    
+        }
+
+        $customer_founded = $this->verify_password($table, $customer);
+        if(!is_object($customer_founded))
+        {
+            return ["error"=>"password","message"=>"password invalide"];    
+        }
+
+        return $customer_founded;
+
+    }
+
 
 }

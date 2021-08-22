@@ -9,10 +9,16 @@ abstract class DefaultAccount
 
     use \App\Domain\Traits\Hydration;
 
-    protected int $id;
-    protected string $email;
-    protected string $password;
 
+
+    protected int $id=0;
+    protected string $email="";
+    protected string $password="";
+
+    
+    public function __construct($data){
+        $this->hydrate($data);
+    }
     // GETTERS
     public function id(): int
     {
@@ -32,11 +38,8 @@ abstract class DefaultAccount
     // SETTERS
     public function setId($id): void
     {
-        if(!is_int($id))
-        {
-            throw new AccountException("l'id n'est pas un entier");
-            return;
-        }
+        $id = (int)$id;
+
 
         if($id <=0)
         {

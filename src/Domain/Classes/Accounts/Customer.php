@@ -12,18 +12,19 @@ class Customer extends DefaultAccount
 
     // constructor
     public function __construct(array $data){
+        parent::__construct($data);
         $this->hydrate($data);
     }
 
     //GETTERS
     public function firstName(): string
     {
-        return $this->firstName;
+        return (string) $this->firstName;
     }
 
     public function lastName(): string
     {
-        return $this->lastName;
+        return (string) $this->lastName;
     }
 
 
@@ -54,5 +55,18 @@ class Customer extends DefaultAccount
         }
 
         $this-> lastName = $lastName;
+    }
+
+    public function __isset($name): bool
+    {
+        if(empty($this->$name) || isset($this->$name)){
+            return false;
+        }
+        return true;
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->hydrate($data);
     }
 }
