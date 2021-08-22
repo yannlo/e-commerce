@@ -106,7 +106,6 @@ class DistributerManager
         ));
         $count=$request->rowCOUNT();
         if($count==0){
-            dd($count);
             return false; 
         }
         

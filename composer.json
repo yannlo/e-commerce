@@ -1,5 +1,5 @@
 {
-    "name": "ehuiy/abidjan-style",
+    "name": "yannlo/abidjan-style",
     "description": "Projet e-commerce abidjan-style v1",
     "autoload": {
         "psr-4": {

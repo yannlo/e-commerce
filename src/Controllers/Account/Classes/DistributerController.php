@@ -75,11 +75,11 @@ class DistributerController implements AccountInterface
     public static function logout(): void
     {
         session_destroy();
-        header('Location: /distributer/login');
+        header('Location: /login');
     }
 
     public static function redirectory($page){
-        header('Location: /distributer/'.$page);
+        header('Location: /'.$page);
         exit();
     }
 

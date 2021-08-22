@@ -14,8 +14,8 @@ class DistributerViews implements AccountInterface
         <h1> Bienvenue sur la page distributeur abidjan-style </h1>
         <p>
             <a href="/item">liste des article</a> <br/>
-            <a href="/distributer/account">Informaion de compte</a> <br/>
-            <a href="/distributer/logout">Deconnexion</a>
+            <a href="/account">Informaion de compte</a> <br/>
+            <a href="/logout">Deconnexion</a>
         </p>
         <?php
         $content= ob_get_clean();
@@ -27,7 +27,7 @@ class DistributerViews implements AccountInterface
         ob_start();
         ?>
         <h1> Connectez vous en tant que distributeur sur abidjan-style </h1>
-        <form action="/distributer/login" method="post">
+        <form action="/login" method="post">
             <?php if(!empty($data)): ?>         
                 <p><strong> <?= $data["error"] ?> error:</strong> <?= $data["message"] ?></p>
             <?php endif ?>
@@ -42,7 +42,7 @@ class DistributerViews implements AccountInterface
             </p>
         </form>
         <p>
-            <a href="/distributer/signup">S'inscrire</a>
+            <a href="/signup">S'inscrire</a>
         </p>
         <?php
         $content= ob_get_clean();
@@ -55,7 +55,7 @@ class DistributerViews implements AccountInterface
         ob_start();
         ?>
         <h1> inscrivez vous et devenez distributeur sur abidjan-style </h1>
-        <form action="/distributer/signup" method="post">
+        <form action="/signup" method="post">
             <p>
                 <label for="nameDistrib">
                     Entrer le nom de votre marque: <input type="text" name="nameDistrib" id="nameDistrib">
@@ -75,7 +75,7 @@ class DistributerViews implements AccountInterface
             </p>
             <input type="submit" value="inscription">
             <p>
-                <a href="/distributer/login">Se connecter</a>
+                <a href="/login">Se connecter</a>
             </p>
         </form>
         <?php
@@ -97,7 +97,7 @@ class DistributerViews implements AccountInterface
             <strong>Description:</strong> <?= $distributer->description()?> <br/>
         </p>
         <p>
-            <a href="/distributer">Retour a la page d'accueil</a>
+            <a href="/">Retour a la page d'accueil</a>
         </p>
         <?php
         $content= ob_get_clean();

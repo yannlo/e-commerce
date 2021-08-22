@@ -83,7 +83,7 @@ class CustomerController implements AccountInterface
     }
 
     private static function homeRedirectory(){
-        header('Location: /customer ');
+        header('Location: / ');
         exit();
     }
 

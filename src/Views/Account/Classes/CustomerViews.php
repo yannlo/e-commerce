@@ -23,13 +23,13 @@ Class CustomerViews implements AccountInterface
         <?php if(is_array($data['customer'])):?>
         <p>
             Monsieur <?= $customer->firstName().' '. $customer->lastName() ?> <br/>
-            <a href="/customer/logout">deconnexion</a> <br/>
-            <a href="/customer/account">information de compte</a>
+            <a href="/logout">deconnexion</a> <br/>
+            <a href="/account">information de compte</a>
         </p>
         <?php else:?>
         <p>
-            <a href="/customer/signup">Inscrivez-vous</a> <br/>
-            <a href="/customer/login">Connectez-vous</a> 
+            <a href="/signup">Inscrivez-vous</a> <br/>
+            <a href="/login">Connectez-vous</a> 
 
         </p>
         <?php endif ?>
@@ -72,7 +72,7 @@ Class CustomerViews implements AccountInterface
         ob_start();
         ?>
         <h1> Inscrivez vous sur abidjan-style </h1>
-        <form action="/customer/signup" method="post">
+        <form action="/signup" method="post">
             <p>
                 <label for="firstName">
                     Entrer votre nom: <input type="text" name="firstName" id="firstName">
