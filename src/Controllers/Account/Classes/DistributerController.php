@@ -4,14 +4,16 @@ namespace App\Controllers\Account\Classes;
 
 
 use App\Models\Tools\ConnectDB;
-use App\Domain\Classes\Accounts\Distributer;
-use  App\Views\Account\Classes\DistributerViews;
-use App\Models\Classes\Account\DistributerManager;
-use App\Controllers\Account\Interfaces\accountInterface;
+use App\Models\Tools\LoginVerification;
+use App\Models\Accounts\DistributerManager;
+use App\Domain\Accounts\Classes\Distributer;
+use App\Views\Accounts\Classes\DistributerViews;
+use App\Controllers\Account\Interfaces\AccountControllerInterface;
 
-class DistributerController implements AccountInterface
+class DistributerController implements AccountControllerInterface
 {
     use \App\Controllers\Tools\Connect;
+
     public static function  index(): void
     {
         if(DistributerController::is_connected('distributer')===false){
@@ -28,8 +30,8 @@ class DistributerController implements AccountInterface
 
         if(!empty($_POST)){
             $distributer = new Distributer($_POST);
-            $manager = new DistributerManager(ConnectDB::getInstanceToPDO());
-            $distributer = $manager->distributer_verify($distributer);
+            $loginVerification = new LoginVerification(ConnectDB::getInstanceToPDO());
+            $distributer = $loginVerification->account_verify($distributer);
 
             if(!is_array($distributer)){
                 $_SESSION['distributer'] =["id"=>$distributer->id(),"nameDistrib"=>$distributer->nameDistrib(),"email"=>$distributer->email()];
@@ -42,6 +44,7 @@ class DistributerController implements AccountInterface
             DistributerViews::login();
         }
     }
+
     public static function signup(): void
     {
         if(self::is_connected('distributer')===false){

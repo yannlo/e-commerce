@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Controllers\Account\Classes;
+namespace  App\Controllers\Account\Classes;
 
 
-use App\Models\Tools\ConnectDB;
-use App\Domain\Classes\Accounts\Customer;
-use  App\Views\Account\Classes\CustomerViews;
-use App\Models\Classes\Account\CustomerManager;
-use App\Controllers\Account\Interfaces\AccountInterface;
+use  App\Models\Tools\ConnectDB;
+use  App\Models\Tools\LoginVerification;
+use App\Models\Accounts\CustomerManager;
+use  App\Domain\Accounts\Classes\Customer;
+use  App\Views\Accounts\Classes\CustomerViews;
+use  App\Controllers\Account\Interfaces\AccountControllerInterface;
 
-class CustomerController implements AccountInterface
+class CustomerController implements AccountControllerInterface
 {
     use \App\Controllers\Tools\Connect;
     public static function  index(): void
@@ -26,8 +27,8 @@ class CustomerController implements AccountInterface
 
         if(!empty($_POST)){
             $customer = new Customer($_POST);
-            $manager = new CustomerManager(ConnectDB::getInstanceToPDO());
-            $customer = $manager->customer_verify($customer);
+            $loginVerification = new LoginVerification(ConnectDB::getInstanceToPDO());
+            $customer = $loginVerification->account_verify($customer);
 
             if(!is_array($customer)){
                 $_SESSION['customer'] =["firstName"=>$customer->firstName(), "lastName"=>$customer->lastName(),"id"=>$customer-> id(),'email'=>$customer->email()];

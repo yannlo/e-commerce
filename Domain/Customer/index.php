@@ -8,13 +8,13 @@ require_once '../../config/config_db.php';
 
 
 
-use App\Controllers\Account\Classes\{
+use  App\Controllers\Account\Classes\{
     CustomerController,
     DistributerController
 };
-use App\Controllers\ItemController;
+use  App\Controllers\ItemController;
 
-use App\Views\Generals\ErrorViews;
+use  App\Views\Generals\Classes\ErrorViews;
 
 
 
@@ -31,27 +31,32 @@ $router->map('GET','/', function(){
 
 });
 
+
+
 $router->map('GET','/[a:page][slh]',function($page){
     if(!method_exists(new CustomerController,$page)){
         http_response_code(404);
         ErrorViews::error_404($page);
-        
-    }else{
-        http_response_code(200);
-        CustomerController::$page();
+        return;
     }
+
+    http_response_code(200);
+    CustomerController::$page();
+
 });
+
+
 
 $router->map('POST','/[a:page][slh]',function($page){
 
     if(!in_array($page,['signup','login'])){
         http_response_code(404);
         ErrorViews::error_404($page);
-
-    }else{
-        http_response_code(200);
-        CustomerController::$page();
+        return;
     }
+
+    http_response_code(200);
+    CustomerController::$page();
 
 });
 
@@ -63,21 +68,23 @@ $router->map('GET','/item[slh]', function(){
 
 });
 
+
+
 $router->map('GET','/item/[*:slug]-[i:id][slh]', function($slug,$id){
     ItemController::Item($id, $slug);
 });
+
 
 $router->map('GET','/item/[a:page][slh]',function($page){
 
     if(!method_exists(new ItemController,$page)){
         http_response_code(404);
         ErrorViews::error_404($page);
-
-    }else{
-        http_response_code(200);
-        ItemController::$page();
+        return;
     }
 
+    http_response_code(200);
+    ItemController::$page();
 });
 
 $router->map('POST','/item/[a:page][slh]',function($page){
@@ -85,12 +92,11 @@ $router->map('POST','/item/[a:page][slh]',function($page){
     if(!in_array($page,['add','delete'])){
         http_response_code(404);
         ErrorViews::error_404($page);
-
-    }else{
-        http_response_code(200);
-        ItemController::$page();
+        return;
     }
 
+    http_response_code(200);
+    ItemController::$page();
 });
 
 
@@ -101,7 +107,8 @@ $match = $router->match();
 
 if(is_array($match)){
     call_user_func_array($match['target'],$match['params']);
-}else{
+}
+else{
     http_response_code(404);
     ErrorViews::error_404($page);
 }

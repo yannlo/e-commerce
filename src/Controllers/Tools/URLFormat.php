@@ -2,7 +2,8 @@
 
 namespace App\Controllers\Tools;
 
-use App\Domain\Classes\Item;
+use App\Domain\Items\Classes\Item;
+
 
 class URLFormat
 {

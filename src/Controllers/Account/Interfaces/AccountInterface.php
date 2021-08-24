@@ -4,9 +4,11 @@ namespace App\Controllers\Account\Interfaces;
 
 use App\Controllers\Generals\GeneralControllerInterface;
 
-interface AccountInterface extends GeneralControllerInterface
+interface AccountControllerInterface extends GeneralControllerInterface
 {
     public static function login(): void;
+
+    public static function logout(): void;
 
     public static function signup(): void;
 

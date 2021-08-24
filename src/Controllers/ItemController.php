@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Controllers;
+namespace  App\Controllers;
 
-use App\Views\itemViews;
-use App\Domain\Classes\Item;
-use App\Models\Tools\ConnectDB;
-use App\Models\Classes\ItemManager;
-use App\Controllers\Tools\URLFormat;
-use App\Models\Classes\Account\DistributerManager;
-use App\Controllers\Account\Classes\DistributerController;
+use  App\Views\Items\itemViews;
+use  App\Models\Tools\ConnectDB;
+use App\Models\Items\ItemManager;
+use App\Domain\Items\Classes\Item;
+use  App\Controllers\Tools\URLFormat;
+use App\Models\Accounts\DistributerManager;
+use  App\Controllers\Account\Classes\DistributerController;
 
 class ItemController 
 {   
@@ -75,7 +75,8 @@ class ItemController
         self::redirectory('list');
 
     }
-    public static function redirectory(string $page) 
+
+    private static function redirectory(string $page) 
     {
         header('Location: /item/'.$page);
         exit();

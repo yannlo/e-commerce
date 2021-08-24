@@ -8,13 +8,13 @@ require_once '../../config/config_db.php';
 
 
 
-use App\Controllers\Account\Classes\{
+use  App\Controllers\Account\Classes\{
     CustomerController,
     DistributerController
 };
-use App\Controllers\ItemController;
+use  App\Controllers\ItemController;
 
-use App\Views\Generals\ErrorViews;
+use  App\Views\Generals\Classes\ErrorViews;
 
 
 
@@ -47,11 +47,10 @@ $router->map('GET','/item/[a:page][slh]',function($page){
     if(!method_exists(new ItemController,$page)){
         http_response_code(404);
         ErrorViews::error_404($page);
-
-    }else{
-        http_response_code(200);
-        ItemController::$page();
+        return;
     }
+    http_response_code(200);
+    ItemController::$page();
 
 });
 
@@ -60,11 +59,11 @@ $router->map('POST','/item/[a:page][slh]',function($page){
     if(!in_array($page,['add','delete'])){
         http_response_code(404);
         ErrorViews::error_404($page);
-
-    }else{
-        http_response_code(200);
-        ItemController::$page();
+        return;
     }
+
+    http_response_code(200);
+    ItemController::$page();
 
 });
 
@@ -75,11 +74,12 @@ $router->map('GET','/[a:page][slh]',function($page){
     if(!method_exists(new DistributerController,$page)){
         http_response_code(404);
         ErrorViews::error_404($page);
-
-    }else{
-        http_response_code(200);
-        DistributerController::$page();
+        return;
     }
+    
+    http_response_code(200);
+    DistributerController::$page();
+    
 
 });
 
@@ -88,11 +88,11 @@ $router->map('POST','/[a:page][slh]',function($page){
     if(!in_array($page,['signup','login'])){
         http_response_code(404);
         ErrorViews::error_404($page);
-
-    }else{
-        http_response_code(200);
-        DistributerController::$page();
+        return;
     }
+
+    http_response_code(200);
+    DistributerController::$page();
 
 });
 
