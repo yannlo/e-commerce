@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Tools;
+namespace App\Models\Tools\Classes;
 
 use App\Domain\Accounts\Classes\Account;
 

@@ -3,8 +3,8 @@
 namespace App\Controllers\Account\Classes;
 
 
-use App\Models\Tools\ConnectDB;
-use App\Models\Tools\LoginVerification;
+use App\Models\Tools\Classes\ConnectDB;
+use App\Models\Tools\Classes\LoginVerification;
 use App\Models\Accounts\DistributerManager;
 use App\Domain\Accounts\Classes\Distributer;
 use App\Views\Accounts\Classes\DistributerViews;

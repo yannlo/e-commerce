@@ -10,6 +10,7 @@ class Item
 
     private int $id;
     private string $itemName;
+    private int $stock;
     private int $price;
     private int $idDistrib;
 
@@ -30,6 +31,11 @@ class Item
         return $this->itemName;
     }
 
+    public function stock():int
+    {
+        return $this->stock;
+    }
+
     public function price():int
     {
         return $this->price;
@@ -40,6 +46,7 @@ class Item
         return $this->idDistrib;
     }
 
+
     //SETTERS
     public function setId($id): void
     {
@@ -47,7 +54,7 @@ class Item
 
         if($id <=0)
         {
-            throw new ItemException("l'id n'est pas strictement positive");
+            throw new ItemException("Invalid id to item");
             return; 
         }
 
@@ -60,7 +67,7 @@ class Item
 
         if(strlen($itemName)<3)
         {
-            throw new ItemException("le nom est trop court");
+            throw new ItemException("Invalid name to item");
             return;
         }
 
@@ -73,11 +80,24 @@ class Item
 
         if($price <=0)
         {
-            throw new ItemException("le prix n'est pas strictement positive");
+            throw new ItemException("Invalid number to price");
             return; 
         }
 
         $this-> price = $price;
+    }
+
+    public function setStock( $stock): void
+    {
+        $stock = (int) $stock;
+
+        if($stock <=0 || $stock >1000)
+        {
+            throw new ItemException("Invalid quantity to stock");
+            return; 
+        }
+
+        $this-> stock = $stock;
     }
 
     public function setIdDistrib($idDistrib): void
@@ -86,11 +106,27 @@ class Item
 
         if($idDistrib <=0)
         {
-            throw new ItemException("l'id du distributeur n'est pas strictement positive");
+            throw new ItemException("Invalid id to distributer");
             return; 
         }
 
         $this-> idDistrib = $idDistrib;
+    }
+
+    public function __serialize(): array
+    {
+        return array(
+            "id"=>$this->id(),
+            "itemName"=> $this -> itemName(),
+            "price" => $this -> price(),
+            "stock"=>$this -> stock(),
+            "idDistrib"=> $this -> idDistrib()
+        );
+    }
+
+    public function __unserialize(array $data)
+    {
+        return new self($data);
     }
 
     

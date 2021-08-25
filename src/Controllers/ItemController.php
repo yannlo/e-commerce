@@ -3,10 +3,10 @@
 namespace  App\Controllers;
 
 use  App\Views\Items\itemViews;
-use  App\Models\Tools\ConnectDB;
 use App\Models\Items\ItemManager;
 use App\Domain\Items\Classes\Item;
 use  App\Controllers\Tools\URLFormat;
+use App\Models\Tools\Classes\ConnectDB;
 use App\Models\Accounts\DistributerManager;
 use  App\Controllers\Account\Classes\DistributerController;
 
