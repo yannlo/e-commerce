@@ -22,15 +22,17 @@ class itemViews
                 <strong>Identifiant de l'article:</strong> <?= $item-> id() ?> <br/>
                 <strong>Nom de l'article:</strong> <?= $item-> itemName() ?> <br/>
                 <strong>Prix de l'article:</strong> <?= NumberFormat::priceFormat($item->price()) ?> <br/>
-                <strong>Nom du distributer:</strong> <?= $distributer-> nameDistrib() ?> <br/>
-                <?php if(!empty($_SESSION['distributer'])&&isset($_SESSION['distributer'])):?>
-                <p>
-                    <a href="/item/delete?id=<?= $item-> id()?>">suprimerl'aritcle</a>
-                </p>
-                <?php endif ?>
-                <p>
-                    <a href="/item/list">retour</a>
-                </p>
+                <strong>Nom du distributer:</strong> <?= $distributer-> nameDistrib() ?>
+            </p>
+
+            <?php if(!empty($_SESSION['distributer'])&&isset($_SESSION['distributer'])):?>
+            <p>
+                <a href="/item/delete?id=<?= $item-> id()?>">suprimerl'aritcle</a>
+            </p>
+            
+            <?php endif ?>
+            <p>
+                <a href="/item/list">retour</a>
             </p>
         </div>
         <?php
@@ -47,13 +49,15 @@ class itemViews
         <h1> Bienvenue sur la page abidjan-style </h1>
         <div>
             <h2>Liste des articles</h2>
-            <?php if(!empty($_SESSION['distributer'])&&isset($_SESSION['distributer'])):?>
+
+            <?php if(!empty($_SESSION['distributer']) && isset($_SESSION['distributer'])):?>
             <p>
                 <a href="/item/add">Ajouter un article</a>
             </p>
             <?php endif ?>
-        <p>
+
             <?php if($data===[]): ?>
+            <p>
                 Aucun article enregistrer sur le site
             </p>
             <?php else: ?>
