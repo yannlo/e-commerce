@@ -23,9 +23,11 @@ Class CustomerViews implements AccountInterface, GeneralViewsInterface
         <p>
             <a href="/cart">votre panier</a> <br/>
         </p>
+        <?php if(isset($customer)):?>
         <p>
             <a href="/order/history">Historique de commande</a> <br/>
         </p>
+        <?php endif; ?>
         <p>
             <a href="/item/list">liste des articles</a>
         </p>
