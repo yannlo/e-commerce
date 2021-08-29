@@ -9,12 +9,12 @@ Class OrderLine
 {
     use \App\Domain\Tools\Hydration;
 
-    private $id;
+    private $id=0;
     private Item $item;
-    private int $quantity;
+    private int $quantity=0;
     private Order $order;
 
-    private function __construct(array $data)
+    public function __construct(array $data)
     {
         $this->hydrate($data);
     }
@@ -46,7 +46,7 @@ Class OrderLine
     {
         $id = (int) $id;
 
-        if ($id <= 0) 
+        if ($id < 0) 
         {
             throw new OrderLineException('Invalid id to orderLine');
             return;
@@ -61,8 +61,7 @@ Class OrderLine
             throw new OrderLineException ("is not element to Order class");
             return;
         }
-
-        if ($order->id() <= 0) 
+        if ($order->id() < 0) 
         {
             throw new OrderLineException('Invalid id to orderLine');
             return;
@@ -111,18 +110,21 @@ Class OrderLine
         return $this->quantity() * $this->item()->price();
     }
 
-    public function __serialize(): array
+    public function jsonEncoder()
     {
-        return array(
-            "id"=>$this->id(),
-            "item"=> $this -> item(),
-            "quantity" => $this -> quantity(),
-            "order"=>$this -> order()->id()
-        );
+        $data=[
+            'id' =>$this->id(),
+            'item' =>$this->item()->jsonEncoder(),
+            'quantity' =>$this-> quantity(),
+        ];
+
+        return json_encode($data,JSON_FORCE_OBJECT);
     }
 
-    public function __unserialize(array $data)
+    public static function jsonDecoder(string $json)
     {
+        $data = (array)json_decode($json);
+        $data['item'] = Item::jsonDecoder($data['item']);
         return new self($data);
     }
 }

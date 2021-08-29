@@ -9,9 +9,9 @@ Abstract Class Account
 {
     use \App\Domain\Tools\Hydration;
     
-    protected int $id;
-    protected string $email;
-    protected string $password;
+    protected int $id=0;
+    protected string $email='';
+    protected string $password='';
 
     // GETTERS
     

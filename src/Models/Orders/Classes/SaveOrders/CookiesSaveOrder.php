@@ -11,23 +11,23 @@ class CookiesSaveOrder implements  OrderDataSaver
 {
     public function getCart()
     {
-        return unserialize($_COOKIE["cart"]);
+        return Order::jsonDecoder($_COOKIE["cart"]);
     }
 
     public function add(Order $order): void
     {
-        if($order->status !== Order::CART)
+        if($order->status() !== Order::CART)
         {
             throw new CookiesSaveOrderException("Order status is not cart");
             return;
         }
 
-        $stringOrder = serialize($order);
+        $stringOrder = $order->jsonEncoder();
 
         $resultCookies=setcookie(
             name:"cart",
             value: $stringOrder,
-            expires_or_options: time() + (60 * 60 * 24)
+            expires_or_options: time() + (60 * 60 * 24*31)
         );
 
         $_COOKIE["cart"]= $stringOrder;
@@ -37,27 +37,39 @@ class CookiesSaveOrder implements  OrderDataSaver
             throw new CookiesSaveOrderException("Cookies is not saved");
             return;
         }
-
-
     }
 
     public function update(Order $order): void
     {
 
-        if(isset($_COOKIE["cart"])OR empty($_COOKIE["cart"]))
+
+        if(!CookiesSaveOrder::cartExist())
         {
             throw new CookiesSaveOrderException("cart cookies not exist");
             return;
         }
 
-        if($order->status !== Order::CART)
+        if($order->status() !== Order::CART)
         {
             throw new CookiesSaveOrderException("Order status is not cart");
             return;
         }
 
-        $stringOrder = serialize($order);
+        $stringOrder = $order->jsonEncoder();
+
+        $resultCookies=setcookie(
+            name:"cart",
+            value: $stringOrder,
+            expires_or_options: time() + (60 * 60 * 24*31)
+        );
+
         $_COOKIE["cart"]= $stringOrder;
+
+        if($resultCookies===false)
+        {
+            throw new CookiesSaveOrderException("Cookies is not saved");
+            return;
+        }
 
     }
 
@@ -76,5 +88,15 @@ class CookiesSaveOrder implements  OrderDataSaver
         }
 
         unset($_COOKIE["cart"]);
+    }
+
+    public static function cartExist()
+    {
+        if(!isset($_COOKIE["cart"]) || empty($_COOKIE["cart"]))
+        {
+            return false;
+        }
+
+        return true;
     }
 }

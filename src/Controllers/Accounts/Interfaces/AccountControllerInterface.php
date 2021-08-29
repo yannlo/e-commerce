@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers\Account\Interfaces;
+namespace App\Controllers\Accounts\Interfaces;
 
 use App\Controllers\Generals\GeneralControllerInterface;
 

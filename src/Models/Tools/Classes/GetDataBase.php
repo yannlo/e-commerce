@@ -4,7 +4,7 @@ namespace App\Models\Tools\Classes;
 
 use App\Domain\Accounts\Classes\Account;
 
-class GetDataBaseName
+class GetDataBase
 {
 
     public static function ByAccountType(Account $account, array $accountTypeList)

@@ -2,12 +2,13 @@
 
 
 namespace App\Domain\Accounts\Classes;
+
 use App\Domain\Accounts\Classes\Exceptions\CustomerException;
 
 class Customer extends Account
 {
-    private string $firstName;
-    private string $lastName;
+    private string $firstName='';
+    private string $lastName='';
 
     // constructor
     public function __construct(array $data){
@@ -30,7 +31,7 @@ class Customer extends Account
     {
         $firstName= (string) $firstName;
 
-        if(strlen($firstName)<3)
+        if(strlen($firstName)< 3)
         {
             throw new CustomerException("le nom est trop court");
             return;
@@ -58,5 +59,25 @@ class Customer extends Account
             return false;
         }
         return true;
+    }
+
+    public function jsonEncoder()
+    {
+        $data=[
+            'id' =>$this->id(),
+            'firstName'=>$this->firstName(),
+            'lastName' =>$this->lastName(),
+            'email' =>$this-> email(),
+            'password' =>$this->password()
+        ];
+
+        return json_encode($data, JSON_FORCE_OBJECT);
+    }
+
+
+    public static function jsonDecoder(string $json)
+    {
+        $data = (array)json_decode($json);
+        return new self($data);
     }
 }

@@ -8,15 +8,10 @@ require_once '../../config/config_db.php';
 
 
 
-use  App\Controllers\Account\Classes\{
-    CustomerController,
-    DistributerController
-};
-use  App\Controllers\ItemController;
-
+use  App\Controllers\Items\ItemController;
 use  App\Views\Generals\Classes\ErrorViews;
-
-
+use App\Controllers\Orders\OrderController;
+use  App\Controllers\Accounts\Classes\CustomerController;
 
 
 $router = new AltoRouter();
@@ -32,7 +27,19 @@ $router->map('GET','/', function(){
 });
 
 
+// cart
+$router->map('POST','/cart[slh]',function(){
+    http_response_code(200);
+    OrderController::cart();
+});
 
+$router->map('GET','/cart[slh]',function(){
+    http_response_code(200);
+    OrderController::cart();
+});
+
+
+// router users pages
 $router->map('GET','/[a:page][slh]',function($page){
     if(!method_exists(new CustomerController,$page)){
         http_response_code(404);
@@ -69,7 +76,6 @@ $router->map('GET','/item[slh]', function(){
 });
 
 
-
 $router->map('GET','/item/[*:slug]-[i:id][slh]', function($slug,$id){
     ItemController::Item($id, $slug);
 });
@@ -100,6 +106,18 @@ $router->map('POST','/item/[a:page][slh]',function($page){
 });
 
 
+// route orders
+$router->map('GET','/order/[a:page][slh]',function($page){
+
+    if(!method_exists(new OrderController,$page) OR ($page === 'cart')){
+        http_response_code(404);
+        ErrorViews::error_404($page);
+        return;
+    }
+
+    http_response_code(200);
+    OrderController::$page();
+});
 
 
 
@@ -112,8 +130,6 @@ else{
     http_response_code(404);
     ErrorViews::error_404($page);
 }
-
-
 
 exit();
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace  App\Controllers\Account\Classes;
+namespace  App\Controllers\Accounts\Classes;
 
 
 use  App\Models\Tools\Classes\ConnectDB;
@@ -8,7 +8,7 @@ use  App\Models\Tools\Classes\LoginVerification;
 use App\Models\Accounts\CustomerManager;
 use  App\Domain\Accounts\Classes\Customer;
 use  App\Views\Accounts\Classes\CustomerViews;
-use  App\Controllers\Account\Interfaces\AccountControllerInterface;
+use  App\Controllers\Accounts\Interfaces\AccountControllerInterface;
 
 class CustomerController implements AccountControllerInterface
 {

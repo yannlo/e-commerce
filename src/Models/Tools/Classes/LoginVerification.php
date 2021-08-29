@@ -70,7 +70,7 @@ class LoginVerification{
     }
 
     private function getAllEmailByAccount(Account $account){
-        $dataBaseName =GetDataBaseName::ByAccountType($account,$this->accountType);
+        $dataBaseName =GetDataBase::ByAccountType($account,$this->accountType);
         $request = $this -> db -> prepare("SELECT * FROM ".$dataBaseName." WHERE email = :email ");
         $request ->execute(array(
             "email" => $account-> email()

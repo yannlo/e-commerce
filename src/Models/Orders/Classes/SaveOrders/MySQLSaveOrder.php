@@ -8,6 +8,7 @@ use App\Domain\Accounts\Classes\Customer;
 use App\Models\Orders\Classes\OrderLineManager;
 use App\Models\Orders\Interfaces\OrderDataSaver;
 use App\Models\Orders\Classes\Exceptions\MySQLSaveOrderException;
+use App\Models\Orders\Classes\Exceptions\OrderLineManagerException;
 
 
 class MySQLSaveOrder implements OrderDataSaver
@@ -40,10 +41,9 @@ class MySQLSaveOrder implements OrderDataSaver
 
         if($request->rowCount()===0)
         {
-            $exception= new MySQLSaveOrderException("Never orderLine to this order");
-            $exception->setPDOMessage($e->getMessage());
-            throw $exception;
-            return;
+        //     $exception= new MySQLSaveOrderException("Never orderLine to this order");
+        //     throw $exception;
+            return false;
         }
 
         $table=[];
@@ -51,12 +51,49 @@ class MySQLSaveOrder implements OrderDataSaver
         {
             $data["customer"] = $customer;
             $order = new Order($data);
-            $data["orderLines"] = $this->orderLineManager->getByOrder($order);
-            $order->setOrderLines($data["orderLines"]);
+            try
+            {
+                $data["orderLines"] = $this->orderLineManager->getByOrder($order);
+                $order->setOrderLines($data["orderLines"]);
+
+            }catch(OrderLineManagerException $e)
+            {
+                $_SESSION["error"][]= $e->getMessage();
+            }
             $table[]=$order;
         }
 
         return $table;
+    }
+
+    public function getCartByCustomerIfExist(Customer $customer)
+    {
+        $list =$this -> getByCustomer($customer);
+        if($list===false)
+        {
+            return false;
+        }
+        foreach($list as $order)
+        {
+            if($order->status()===Order::CART)
+            {
+                return $order;  
+            }
+        }
+        return false;    
+    }
+
+    public function getOnlyOrderByCustomer(Customer $customer)
+    {
+        $orders = array_filter($this -> getByCustomer($customer),function($order){
+            if($order->status() === Order::CART)
+            {
+                return false;
+            }
+            
+            return true;
+        });
+        return $orders;
     }
 
     // My SQL
@@ -103,6 +140,20 @@ class MySQLSaveOrder implements OrderDataSaver
             throw $exception;
             return;
         }
+
+
+
+        foreach($order->orderLines() as $orderLine)
+        {
+            if($this->orderLineManager->ifOrderLineExists($orderLine))
+            {
+                $this->orderLineManager->update($orderLine);
+            }
+            else
+            {
+                $this->orderLineManager->add($orderLine);
+            }
+        }
         
     }
 
@@ -117,7 +168,6 @@ class MySQLSaveOrder implements OrderDataSaver
             ));
             
         }
-
         catch(\PDOException $e)
         {
             $exception= new MySQLSaveOrderException("Recovery orderLine error in the database");
@@ -125,6 +175,14 @@ class MySQLSaveOrder implements OrderDataSaver
             throw $exception;
             return;
         }
+
+        $orderLines = $this->orderLineManager->getByOrder($order);
+
+        foreach($orderLines as $orderLine)
+        {
+            $this->orderLineManager->delete($orderLine);
+        }
+
     }
 
 }

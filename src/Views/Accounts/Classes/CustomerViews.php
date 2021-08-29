@@ -21,6 +21,12 @@ Class CustomerViews implements AccountInterface, GeneralViewsInterface
         ?>
         <h1> Bienvenue sur la page abidjan-style </h1>
         <p>
+            <a href="/cart">votre panier</a> <br/>
+        </p>
+        <p>
+            <a href="/order/history">Historique de commande</a> <br/>
+        </p>
+        <p>
             <a href="/item/list">liste des articles</a>
         </p>
         <?php if(is_array($data['customer'])):?>

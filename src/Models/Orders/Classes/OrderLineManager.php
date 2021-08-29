@@ -21,7 +21,7 @@ class OrderLineManager
 
     public function getByOrder(Order $order)
     {
-        $request = $this-> db -> prepare("SELECT * FROM orderlines  WHERE order= :order");
+        $request = $this-> db -> prepare("SELECT * FROM orderlines  WHERE `order`= :order");
 
         try
         {
@@ -41,7 +41,6 @@ class OrderLineManager
         if($request->rowCount()===0)
         {
             $exception= new OrderLineManagerException("Never orderLine to this order");
-            $exception->setPDOMessage($e->getMessage());
             throw $exception;
             return;
         }
@@ -49,6 +48,7 @@ class OrderLineManager
         $table=[];
         while($data = $request->fetch())
         {
+
             $data["item"] = $this->itemManager->getOnce($data['item']);
             $data["order"] = $order;
 
@@ -60,13 +60,13 @@ class OrderLineManager
 
     public function add(OrderLine $orderLine): void
     {
-        $request = $this-> db -> prepare("INSERT INTO orderlines (item,quantity,order) VALUES(:item,:quantity,:order)");
+        $request = $this-> db -> prepare("INSERT INTO orderlines (item,quantity,`order`) VALUES(:item,:quantity,:order)");
         try
         {
             $request ->execute(array(
                 'item'=> $orderLine->item()->id(),
                 'quantity'=> $orderLine->quantity(),
-                'order'=> $orderLine->Order()->id()
+                'order'=> $orderLine->order()->id()
             ));
             
         }
@@ -81,7 +81,7 @@ class OrderLineManager
 
     public function update(OrderLine $orderLine): void
     {
-        $request = $this-> db -> prepare("UPDATE orderlines SET item=:item,quantity=:quantity,order=:order WHERE id = :id");
+        $request = $this-> db -> prepare("UPDATE orderlines SET item=:item,quantity=:quantity,`order`=:order WHERE id = :id");
         try
         {
             $request ->execute(array(
@@ -120,4 +120,32 @@ class OrderLineManager
         }
     }
 
+    public function ifOrderLineExists(OrderLine $orderLine): bool|null
+    {
+        $request = $this-> db -> prepare("SELECT * FROM orderlines  WHERE id= :id");
+
+        try
+        {
+            $request ->execute(array(
+                "id" => $orderLine->id()
+            ));
+            
+        }
+        catch(\PDOException $e)
+        {
+            $exception= new OrderLineManagerException("Recovery orderLine error in the database");
+            $exception->setPDOMessage($e->getMessage());
+            throw $exception;
+            return null;
+        }
+
+        if($request->rowCount()===0)
+        {
+
+            return false;
+        }
+
+        return true;
+    }
 }
+

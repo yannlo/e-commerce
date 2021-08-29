@@ -33,12 +33,13 @@ class ItemManager
 
     public function add(Item $item): bool
     {
-        $request = $this -> db -> prepare("INSERT INTO items (itemName, price, idDistrib) VALUES (:itemName, :price, :idDistrib)");
+        $request = $this -> db -> prepare("INSERT INTO items (itemName, price, stock, idDistrib) VALUES (:itemName, :price, :stock, :idDistrib)");
         try {
 
             $request->execute(array(
                 "itemName" => $item -> itemName(),
                 "price" => $item -> price(),
+                "stock" => $item -> stock(),
                 "idDistrib" => $item -> idDistrib()
             ));
             return true;
@@ -52,13 +53,14 @@ class ItemManager
 
     public function update(Item $item): bool
     {
-        $request = $this -> db -> prepare("UPDATE items SET itemName= :itemName, price=:price, idDistrib=:idDistrib WHERE id=:id");
+        $request = $this -> db -> prepare("UPDATE items SET itemName= :itemName, price=:price,stock=:stock, idDistrib=:idDistrib WHERE id=:id");
         try{
 
             $request->execute(array(
                 "id"=>$item -> id(),
                 "itemName" => $item -> itemName(),
                 "price" => $item -> price(),
+                "price" => $item -> stock(),
                 "idDistrib" => $item -> idDistrib()
             ));
             return true;

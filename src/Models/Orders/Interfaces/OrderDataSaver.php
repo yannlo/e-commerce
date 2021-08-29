@@ -3,9 +3,8 @@
 namespace App\Models\Orders\Interfaces;
 
 use App\Domain\Orders\Order;
-use App\Models\Tools\Interfaces\DataSaver;
 
-interface OrderDataSaver extends DataSaver
+interface OrderDataSaver
 {
     public function add(Order $order): void;
 

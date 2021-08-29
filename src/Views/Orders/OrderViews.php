@@ -10,9 +10,20 @@ class OrderViews
 {
     public static function Cart(Order $order)
     {
+        $errors=[];
+        if(!empty($_SESSION['error']))
+        {
+            $errors = $_SESSION['error'];
+        }
+        $order = $order;
         ob_start();
         ?>
         <h1>Votre panier</h1>
+        <?php foreach($errors as $error): ?>
+        <p>
+            <?= $error ?>
+        </p>
+        <?php unset($_SESSION['error']); endforeach ?>
         <table>
             <tr>
                 <th>Nom de l'article</th>
@@ -28,6 +39,9 @@ class OrderViews
             <strong>Total:</strong> <?= NumberFormat::priceFormat($order-> getTotalCost()) ?>
         </p>
 
+        <p>
+            <a href="/">retour</a>
+        </p>
 
         <?php
         $content= ob_get_clean();
@@ -37,23 +51,22 @@ class OrderViews
 
     public static function history(array $data=[])
     {
+        $errors=[];
+        if(!empty($_SESSION['error']))
+        {
+            $errors = $_SESSION['error'];
+        }
+        $orders = $data;
         ob_start();
         ?>
         <h1>Votre historique de commande</h1>
-        <?php if(empty($data)): ?>
+        <?php foreach($errors as $error): ?>
         <p>
-            Aucune commande enregistrer
+            <?= $error ?>
         </p>
-        <?php else: ?>
+        <?php unset($_SESSION['error']); endforeach ?>
         <div>
-            <?php foreach ($data as $order):?>
-
-            <?php if($order->status === Order::CART)
-            {
-                continue;
-            }
-            ?>
-
+            <?php foreach ($orders as $order):?>
             <div>
                 <p>
                     <strong>Numero de commande: </strong> <?= $order-> id()?>
@@ -67,12 +80,12 @@ class OrderViews
             </div>
             <?php endforeach ?>
         </div>
-        <?php endif ?>
+        <p>
+           <a href="/">retour</a>
+        </p>
         <?php
         $content= ob_get_clean();
     
         TemplateViews::basicTemplate(title: "Historique de commande | ".\DOMAIN_NAME ,content:$content);
-    }
-
-    
+    } 
 }

@@ -1,5 +1,5 @@
 <?php
-namespace App\Domain\Classes\Items\Exceptions;
+namespace App\Domain\Items\Classes\Exceptions;
 class ItemException extends \Exception{
     
 }

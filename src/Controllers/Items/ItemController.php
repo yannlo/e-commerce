@@ -1,6 +1,6 @@
 <?php
 
-namespace  App\Controllers;
+namespace  App\Controllers\Items;
 
 use  App\Views\Items\itemViews;
 use App\Models\Items\ItemManager;
@@ -8,7 +8,7 @@ use App\Domain\Items\Classes\Item;
 use  App\Controllers\Tools\URLFormat;
 use App\Models\Tools\Classes\ConnectDB;
 use App\Models\Accounts\DistributerManager;
-use  App\Controllers\Account\Classes\DistributerController;
+use App\Controllers\Accounts\Classes\DistributerController;
 
 class ItemController 
 {   
@@ -51,9 +51,8 @@ class ItemController
             $item = new Item($table);
 
             $manager = new ItemManager(ConnectDB::getInstanceToPDO());
-            $manager->add($item);
-
             self::redirectory('list');
+            $manager->add($item);
             return;
         }
 

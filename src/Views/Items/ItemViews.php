@@ -18,6 +18,7 @@ class itemViews
         ?>
         <h1> Bienvenue sur la page abidjan-style </h1>
         <div>
+            <h2>Detail de l'article</h2>
             <p>
                 <strong>Identifiant de l'article:</strong> <?= $item-> id() ?> <br/>
                 <strong>Nom de l'article:</strong> <?= $item-> itemName() ?> <br/>
@@ -25,12 +26,23 @@ class itemViews
                 <strong>Nom du distributer:</strong> <?= $distributer-> nameDistrib() ?>
             </p>
 
+            <?php if(empty($_SESSION['distributer']) || !isset($_SESSION['distributer'])):?>
+                <h2>Commander un article</h2>
+            <form action="/cart" method="post">
+                <p>
+                    <label for="quantity">Quanité :<input type="number" min="1" max="<?= $item-> stock() ?>" name="quantity" id="quantity"></label><br/>
+                    <input type="hidden" name="item" value="<?= $item-> id() ?>">
+                    <input type="submit" value="Ajouter au panier">
+                </p>
+            </form>
+            <?php endif ?>
+
             <?php if(!empty($_SESSION['distributer'])&&isset($_SESSION['distributer'])):?>
             <p>
                 <a href="/item/delete?id=<?= $item-> id()?>">suprimerl'aritcle</a>
             </p>
-            
             <?php endif ?>
+
             <p>
                 <a href="/item/list">retour</a>
             </p>
@@ -91,7 +103,8 @@ class itemViews
             <form action="/item/add" method="post">
                 <p>
                     <label for="itemName">Nom de l'article: <input type="text" id="itemName" name='itemName'></label><br/>
-                    <label for="price">Prix de l'article<input type="number" min="1000" max="100000" id="price" name="price"></label>
+                    <label for="price">Prix de l'article<input type="number" min="1000" max="100000" id="price" name="price"></label><br/>
+                    <label for="stock">Stock de l'article<input type="number" min="1" max="1000" id="stock" name="stock"></label>
                 </p>
                 <input type="submit" value="Ajouter">
             </form>

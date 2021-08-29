@@ -9,8 +9,8 @@ class Order
 {
     use \App\Domain\Tools\Hydration;
 
-    private int $id;
-    private array $orderLines;
+    private int $id=0;
+    private array $orderLines=[];
     private Customer $customer;
     private int $status = self::CART;
 
@@ -22,6 +22,8 @@ class Order
 
     public function __construct(array $data)
     {
+        $this->orderLines = array();
+        $this->customer= new Customer([]);
         $this-> hydrate($data);
     }
 
@@ -52,7 +54,7 @@ class Order
     {
         $id = (int) $id;
 
-        if ($id <= 0) 
+        if ($id < 0) 
         {
             throw new OrderException('Invalid id to order');
             return;
@@ -65,11 +67,11 @@ class Order
     {
         $orderLines = (array) $orderLines;
 
-        if (empty($orderLines))
-        {
-            throw new OrderException('OrderLines is empty');
-            return;
-        }
+        // if (empty($orderLines))
+        // {
+        //     throw new OrderException('OrderLines is empty');
+        //     return;
+        // }
 
         foreach ($orderLines as $orderLine)
         {
@@ -91,11 +93,11 @@ class Order
             return;
         }
 
-        if($customer->id() === null || $customer->id() <= 0 )
-        {
-            throw new OrderException ("Invalid customer");
-            return;
-        }
+        // if($customer->id() === null || $customer->id() <= 0 )
+        // {
+        //     throw new OrderException ("Invalid customer");
+        //     return;
+        // }
 
         $this->customer = $customer;
     }
@@ -160,6 +162,7 @@ class Order
     public function OrderLineExist($orderLine)
     {
         $key=$this->foundOrderLine($orderLine);
+
         if($key===false)
         {
             throw new OrderException('Orderline not exist in order');
@@ -180,18 +183,41 @@ class Order
         return $totalCost;
     }
 
-    public function __serialize(): array
+    public function jsonEncoder(): string
     {
-        return array(
-            "id"=>$this->id(),
-            "orderLines"=> $this -> orderLines(),
-            "customer" => $this -> customer(),
-            "status"=>$this -> status()
+        $data = array(
+            "id"=>$this->id,
+            "status"=>$this->status()
         );
+        if($this->customer->id() !== 0)
+        {
+            $data["customer"]=$this->customer->jsonEncoder();
+        }
+        $orderLinesJson=[];
+        foreach($this->orderLines  as $orderLine)
+        {
+            $orderLinesJson[]=$orderLine->jsonEncoder();
+        }
+        $data['orderLines']=$orderLinesJson;
+        return json_encode($data,JSON_FORCE_OBJECT);
     }
 
-    public function __unserialize(array $data)
+    public static function jsonDecoder(string $json)
     {
+        $data = (array) json_decode($json);  
+        if(isset($data['customer']))
+        {
+            $data['customer'] = Customer::jsonDecoder($data['customer']);
+        }
+        $orderLines =[];
+
+        foreach($data['orderLines'] as $orderLine)
+        {
+            $orderLines[] = OrderLine::jsonDecoder($orderLine);
+        }
+
+        $data['orderLines'] = $orderLines;
+
         return new self($data);
     }
 }

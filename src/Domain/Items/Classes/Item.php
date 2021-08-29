@@ -2,14 +2,16 @@
 
 
 namespace App\Domain\Items\Classes;
-use App\Domain\Classes\Items\Exceptions\ItemException;
+
+use App\Domain\Items\Classes\Exceptions\ItemException;
+
 
 class Item 
 {
     use \App\Domain\Tools\Hydration;
 
     private int $id;
-    private string $itemName;
+    protected string $itemName;
     private int $stock;
     private int $price;
     private int $idDistrib;
@@ -113,21 +115,24 @@ class Item
         $this-> idDistrib = $idDistrib;
     }
 
-    public function __serialize(): array
+    public function jsonEncoder()
     {
-        return array(
-            "id"=>$this->id(),
-            "itemName"=> $this -> itemName(),
-            "price" => $this -> price(),
-            "stock"=>$this -> stock(),
-            "idDistrib"=> $this -> idDistrib()
-        );
+        $data=[
+            'id' =>$this->id(),
+            'itemName'=>$this->itemName(),
+            'stock' =>$this->stock(),
+            'price' =>$this-> price(),
+            'idDistrib' =>$this->idDistrib()
+        ];
+
+        return json_encode($data,JSON_FORCE_OBJECT);
     }
 
-    public function __unserialize(array $data)
+
+    public static function jsonDecoder(string $json)
     {
+        $data = (array)json_decode($json);
         return new self($data);
     }
-
     
 }

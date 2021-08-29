@@ -8,12 +8,8 @@ require_once '../../config/config_db.php';
 
 
 
-use  App\Controllers\Account\Classes\{
-    CustomerController,
-    DistributerController
-};
-use  App\Controllers\ItemController;
-
+use  App\Controllers\Accounts\Classes\DistributerController;
+use  App\Controllers\Items\ItemController;
 use  App\Views\Generals\Classes\ErrorViews;
 
 
