@@ -61,23 +61,4 @@ class Customer extends Account
         return true;
     }
 
-    public function jsonEncoder()
-    {
-        $data=[
-            'id' =>$this->id(),
-            'firstName'=>$this->firstName(),
-            'lastName' =>$this->lastName(),
-            'email' =>$this-> email(),
-            'password' =>$this->password()
-        ];
-
-        return json_encode($data, JSON_FORCE_OBJECT);
-    }
-
-
-    public static function jsonDecoder(string $json)
-    {
-        $data = (array)json_decode($json);
-        return new self($data);
-    }
 }

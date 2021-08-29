@@ -114,25 +114,5 @@ class Item
 
         $this-> idDistrib = $idDistrib;
     }
-
-    public function jsonEncoder()
-    {
-        $data=[
-            'id' =>$this->id(),
-            'itemName'=>$this->itemName(),
-            'stock' =>$this->stock(),
-            'price' =>$this-> price(),
-            'idDistrib' =>$this->idDistrib()
-        ];
-
-        return json_encode($data,JSON_FORCE_OBJECT);
-    }
-
-
-    public static function jsonDecoder(string $json)
-    {
-        $data = (array)json_decode($json);
-        return new self($data);
-    }
     
 }

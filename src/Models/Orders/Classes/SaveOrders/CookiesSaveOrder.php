@@ -3,6 +3,7 @@
 namespace App\Models\Orders\Classes\SaveOrders;
 
 use App\Domain\Orders\Order;
+use App\Domain\Tools\JSONFormatter;
 use App\Models\Orders\Interfaces\OrderDataSaver;
 use App\Models\Orders\Classes\Exceptions\CookiesSaveOrderException;
 
@@ -11,7 +12,7 @@ class CookiesSaveOrder implements  OrderDataSaver
 {
     public function getCart()
     {
-        return Order::jsonDecoder($_COOKIE["cart"]);
+        return JSONFormatter::jsonDecoderToOrder($_COOKIE["cart"]);
     }
 
     public function add(Order $order): void
@@ -22,7 +23,7 @@ class CookiesSaveOrder implements  OrderDataSaver
             return;
         }
 
-        $stringOrder = $order->jsonEncoder();
+        $stringOrder = JSONFormatter::jsonEncoderToOrder($order);
 
         $resultCookies=setcookie(
             name:"cart",
@@ -55,7 +56,7 @@ class CookiesSaveOrder implements  OrderDataSaver
             return;
         }
 
-        $stringOrder = $order->jsonEncoder();
+        $stringOrder = JSONFormatter::jsonEncoderToOrder($order);
 
         $resultCookies=setcookie(
             name:"cart",

@@ -182,42 +182,4 @@ class Order
 
         return $totalCost;
     }
-
-    public function jsonEncoder(): string
-    {
-        $data = array(
-            "id"=>$this->id,
-            "status"=>$this->status()
-        );
-        if($this->customer->id() !== 0)
-        {
-            $data["customer"]=$this->customer->jsonEncoder();
-        }
-        $orderLinesJson=[];
-        foreach($this->orderLines  as $orderLine)
-        {
-            $orderLinesJson[]=$orderLine->jsonEncoder();
-        }
-        $data['orderLines']=$orderLinesJson;
-        return json_encode($data,JSON_FORCE_OBJECT);
-    }
-
-    public static function jsonDecoder(string $json)
-    {
-        $data = (array) json_decode($json);  
-        if(isset($data['customer']))
-        {
-            $data['customer'] = Customer::jsonDecoder($data['customer']);
-        }
-        $orderLines =[];
-
-        foreach($data['orderLines'] as $orderLine)
-        {
-            $orderLines[] = OrderLine::jsonDecoder($orderLine);
-        }
-
-        $data['orderLines'] = $orderLines;
-
-        return new self($data);
-    }
 }

@@ -110,22 +110,5 @@ Class OrderLine
         return $this->quantity() * $this->item()->price();
     }
 
-    public function jsonEncoder()
-    {
-        $data=[
-            'id' =>$this->id(),
-            'item' =>$this->item()->jsonEncoder(),
-            'quantity' =>$this-> quantity(),
-        ];
-
-        return json_encode($data,JSON_FORCE_OBJECT);
-    }
-
-    public static function jsonDecoder(string $json)
-    {
-        $data = (array)json_decode($json);
-        $data['item'] = Item::jsonDecoder($data['item']);
-        return new self($data);
-    }
 }
 
