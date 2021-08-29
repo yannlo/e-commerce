@@ -14,9 +14,18 @@ class OrderLineViews
         ?>
         <tr>
             <td><a href="/item/<?= URLFormat::itemFormat($orderLine->item())?>"><?= $orderLine->item() -> itemName() ?></a></td>
-            <td><?= $orderLine->quantity() ?></td>
+            <td>
+                <form action="/cart" method="post">
+                    <input type="hidden" name="item"value="<?=$orderLine->item()->id() ?>">
+                    <input type="hidden" name="id"value="<?= $orderLine->id() ?>">
+                    <input type="number" name="quantity" value="<?= $orderLine->quantity()?>"  min="1" max="<?= $orderLine->item()-> stock() ?>" >
+                    <input type="submit" name="submit" value="update">
+                </form>
+            </td>
             <td><?= NumberFormat::priceFormat($orderLine->item()->price()) ?></td>
             <td><?=  NumberFormat::priceFormat($orderLine->getCost()) ?></td>
+            <td><a href="/cart?delete=<?=  $orderLine->id() ?>&item=<?=$orderLine->item()->id() ?>"> supprimer l'article</a></td>
+
         </tr>
         <?php
         return ob_get_clean();

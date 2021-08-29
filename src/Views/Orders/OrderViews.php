@@ -13,7 +13,7 @@ class OrderViews
         $errors=[];
         if(!empty($_SESSION['error']))
         {
-            $errors = $_SESSION['error'];
+            // $errors = $_SESSION['error'];
         }
         $order = $order;
         ob_start();
@@ -54,7 +54,7 @@ class OrderViews
         $errors=[];
         if(!empty($_SESSION['error']))
         {
-            $errors = $_SESSION['error'];
+            // $errors = $_SESSION['error'];
         }
         $orders = $data;
         ob_start();

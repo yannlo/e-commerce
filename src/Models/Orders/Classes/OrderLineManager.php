@@ -103,7 +103,7 @@ class OrderLineManager
 
     public function delete(OrderLine $orderLine): void
     {
-        $request = $this-> db -> prepare("SELECT FROM orderlines WHERE id = :id");
+        $request = $this-> db -> prepare("DELETE FROM orderlines WHERE id = :id");
         try
         {
             $request ->execute(array(
@@ -122,12 +122,13 @@ class OrderLineManager
 
     public function ifOrderLineExists(OrderLine $orderLine): bool|null
     {
-        $request = $this-> db -> prepare("SELECT * FROM orderlines  WHERE id= :id");
+        $request = $this-> db -> prepare("SELECT * FROM orderlines  WHERE item=:item AND `order` = :order ");
 
         try
         {
             $request ->execute(array(
-                "id" => $orderLine->id()
+                "item"=>$orderLine-> item()->id(),
+                "order" => $orderLine->order()->id()
             ));
             
         }

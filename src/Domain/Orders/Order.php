@@ -140,18 +140,17 @@ class Order
         }
 
         $key = $this->OrderLineExist($orderLine);
-
         unset($this->orderLines[$key]);
     }
 
     // to modified OrderLine in array
-    private function foundOrderLine(OrderLine $orderLine): int|bool
+    public function foundOrderLine(OrderLine $orderLine): int|bool
     {
-        foreach($this->orderLines as $orderLineToUpdate)
+        foreach($this->orderLines as $key => $orderLineToUpdate)
         {
-            if($orderLineToUpdate->id()=== $orderLine->id())
+            if($orderLineToUpdate->item()->id() === $orderLine->item()->id())
             {
-                return key($orderLineToUpdate);
+                return $key;
             }
         }
 

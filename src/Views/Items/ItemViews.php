@@ -32,7 +32,7 @@ class itemViews
                 <p>
                     <label for="quantity">Quanité :<input type="number" min="1" max="<?= $item-> stock() ?>" name="quantity" id="quantity"></label><br/>
                     <input type="hidden" name="item" value="<?= $item-> id() ?>">
-                    <input type="submit" value="Ajouter au panier">
+                    <input type="submit" name="submit" value="Ajouter au panier">
                 </p>
             </form>
             <?php endif ?>
