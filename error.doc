@@ -1,0 +1,14 @@
+Error list: 
+
+    TypeError:
+        code: 1xx -> Invalid argument value
+        code: 2xx -> object or element array is empty
+        code: 3xx -> object or element type is invalid
+        code: 4xx -> not confirm action
+        code: 5xx -> not found object or element
+        code: 6xx -> impossible action
+
+    ElementError:
+        code: x00 -> self object
+        code: x01 -> object or element in argument
+        code: x02 -> object or element array in argument

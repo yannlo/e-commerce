@@ -3,6 +3,7 @@
 
 namespace App\Views\Accounts\Classes;
 
+use App\Controllers\Tools\Connect;
 use App\Domain\Accounts\Classes\Customer;
 use App\Views\Generals\Classes\TemplateViews;
 use App\Views\Accounts\Interfaces\AccountInterface;
@@ -14,8 +15,8 @@ Class CustomerViews implements AccountInterface, GeneralViewsInterface
 {
     public static function index(array $data=[]): void
     {   
-        if($data['customer']!=false){
-            $customer =new Customer($data["customer"]);
+        if(Connect::TypeConnectionVerify("customer")){
+            $customer =new Customer(Connect::getUser());
         }
         ob_start();
         ?>
@@ -31,7 +32,7 @@ Class CustomerViews implements AccountInterface, GeneralViewsInterface
         <p>
             <a href="/item/list">liste des articles</a>
         </p>
-        <?php if(is_array($data['customer'])):?>
+        <?php if(Connect::TypeConnectionVerify("customer")):?>
         <p>
             Monsieur <?= $customer->firstName().' '. $customer->lastName() ?> <br/>
             <a href="/logout">deconnexion</a> <br/>
@@ -60,7 +61,7 @@ Class CustomerViews implements AccountInterface, GeneralViewsInterface
         <form action="" method="post">
         <p>
             <?php if(!empty($data)): ?>         
-                <p><strong> <?= $data["error"] ?> error:</strong> <?= $data["message"] ?></p>
+                <p><strong>error:</strong> <?= $data["error"] ?></p>
             <?php endif ?>
             <label for="email">
                 Entrer votre email: <input type="email" name="email" id="email">
@@ -120,7 +121,7 @@ Class CustomerViews implements AccountInterface, GeneralViewsInterface
 
     public static function account(array $data=[]): void
     {
-        $customer =new Customer($data["customer"]);
+        $customer =$data['customer'];
         ob_start();
         ?>
         <h1>Imformation de compte</h1>

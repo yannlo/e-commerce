@@ -3,83 +3,111 @@
 namespace  App\Controllers\Accounts\Classes;
 
 
+use App\Controllers\Tools\Connect;
 use  App\Models\Tools\Classes\ConnectDB;
-use  App\Models\Tools\Classes\LoginVerification;
 use App\Models\Accounts\CustomerManager;
 use  App\Domain\Accounts\Classes\Customer;
 use  App\Views\Accounts\Classes\CustomerViews;
+use  App\Models\Tools\Classes\LoginVerification;
+use App\Controllers\Tools\Exceptions\ConnectException;
+use App\Models\Tools\Classes\Exceptions\LoginVerificationException;
 use  App\Controllers\Accounts\Interfaces\AccountControllerInterface;
 
 class CustomerController implements AccountControllerInterface
 {
-    use \App\Controllers\Tools\Connect;
     public static function  index(): void
     {
-        $data=["customer"=>self::is_connected('customer')];
-        CustomerViews::index($data);
+        CustomerViews::index();
     }
 
     public static function login(): void
     {
-        if(self::is_connected('customer')!==false){
+        if(Connect::TypeConnectionVerify('customer')){
             self::homeRedirectory();
         }
 
-        if(!empty($_POST)){
-            $customer = new Customer($_POST);
-            $loginVerification = new LoginVerification(ConnectDB::getInstanceToPDO());
+        if(empty($_POST))
+        {
+            CustomerViews::login();
+            return;
+
+        }
+
+
+        $customer = new Customer($_POST);
+        $loginVerification = new LoginVerification(ConnectDB::getInstanceToPDO());
+        try
+        {
             $customer = $loginVerification->account_verify($customer);
 
-            if(!is_array($customer)){
-                $_SESSION['customer'] =["firstName"=>$customer->firstName(), "lastName"=>$customer->lastName(),"id"=>$customer-> id(),'email'=>$customer->email()];
-                self::homeRedirectory();
-            }
-
-            CustomerViews::login($customer);
-        }else{
-            CustomerViews::login();
         }
+        catch(LoginVerificationException $e)
+        {
+            $data['error'] = $e->getMessage();
+            CustomerViews::login($data);
+            return;
+        }
+
+        $data =[
+            "firstName"=>$customer->firstName(),
+            "lastName"=>$customer->lastName(),
+            "id"=>$customer-> id(),
+            'email'=>$customer->email()
+        ];
+
+        Connect::userConnection('customer', $data);
+        self::homeRedirectory();
     }
 
     public static function signup(): void
     {
-        if(is_bool(self::is_connected('customer'))){
-            if(!empty($_POST)){
-                $customer = new Customer($_POST);
-                if($_POST['password']!==$_POST['confirmation_password']){
-                    CustomerViews::signup();
-                    return;
-                }
-                if(isset($customer->email)OR isset($customer->password)){
-                    CustomerViews::signup();
-                    return;
-                }
-                $manager = new CustomerManager(ConnectDB::getInstanceToPDO());
-                $manager ->add($customer);
-                self::homeRedirectory();
-            }
-
-            CustomerViews::signup();
-        }else{
+        if(Connect::typeConnectionVerify('customer')){
             self::homeRedirectory();
+            return;
         }
+
+        if(!isset($_POST)){
+            CustomerViews::signup();
+            return;
+        }
+        
+        if(!isset($_POST['email']) OR  !isset($_POST['password'])){
+            CustomerViews::signup();
+            return;
+        }
+
+        
+        if($_POST['password']!==$_POST['confirmation_password']){
+            CustomerViews::signup();
+            return;
+        }
+        
+        $customer = new Customer($_POST);
+        $manager = new CustomerManager(ConnectDB::getInstanceToPDO());
+
+        $manager ->add($customer);
+        
+        self::homeRedirectory();
     }
 
     public static function account(): void
     {
-        if(CustomerController::is_connected('customer')!== false){
-            $data=["customer"=>CustomerController::is_connected('customer')];
-            CustomerViews::account($data);
-            return;
+        if(!Connect::typeConnectionVerify('customer')){
+            self::homeRedirectory();
         }
-
-        CustomerController::homeRedirectory();
+        
+        $data=[
+            "customer"=>Connect::getUser('customer')
+        ];
+        CustomerViews::account($data);
+        return;
+        
     }
 
     public static function logout(): void
     {
         session_destroy();
-        CustomerController::homeRedirectory();
+        self::homeRedirectory();
 
     }
 

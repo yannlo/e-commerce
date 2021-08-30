@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Tools\Classes\Exception;
+namespace App\Models\Tools\Classes\Exceptions;
 
 
 class ManagerException extends \Exception

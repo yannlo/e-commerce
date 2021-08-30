@@ -4,6 +4,7 @@ namespace  App\Controllers\Items;
 
 use  App\Views\Items\itemViews;
 use App\Models\Items\ItemManager;
+use App\Controllers\Tools\Connect;
 use App\Domain\Items\Classes\Item;
 use  App\Controllers\Tools\URLFormat;
 use App\Models\Tools\Classes\ConnectDB;
@@ -21,24 +22,30 @@ class ItemController
 
     public static function item(int $id, string $slug): void
     {
+
         $itemManager = new ItemManager(ConnectDB::getInstanceToPDO());
+
         $distributerManager = new DistributerManager(ConnectDB::getInstanceToPDO());
+
         $item = $itemManager->getOnce($id);
         $distributer = $distributerManager->getOnce($item->idDistrib());
+
         $trueSlug= URLFormat::slugItemFormat($item); 
-        $trueURL= URLFormat::itemFormat($item); 
+        $trueURL= URLFormat::itemFormat($item);
+
         if($trueSlug !== $slug)
         {
             header('Location: /item/'. $trueURL);
             exit();
         }
+
         $data = ["item"=>$item, "distributer"=>$distributer];
         ItemViews::item($data);
     }
 
     public static function add(): void
     {
-        if(DistributerController::is_connected('distributer')===false)
+        if(!Connect::typeConnectionVerify('distributer'))
         {
             DistributerController::redirectory('login');
         }

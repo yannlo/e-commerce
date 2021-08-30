@@ -3,10 +3,11 @@
 
 namespace App\Domain\Tools;
 
+use App\Domain\Orders\Order;
 use App\Domain\Orders\OrderLine;
 use App\Domain\Items\Classes\Item;
 use App\Domain\Accounts\Classes\Customer;
-use App\Domain\Orders\Order;
+use App\Domain\Orders\Exceptions\OrderException;
 
 class JSONFormatter
 {
@@ -110,6 +111,19 @@ class JSONFormatter
 
         $data['orderLines'] = $orderLines;
 
-        return new Order($data);
+        try
+        {
+            $order = new Order($data);
+        }
+        catch (OrderException $e)
+        {
+            if($e->getCode()===200)
+            {
+                unset($data['orderLines']);
+            }
+            $order = new Order($data);
+
+        }
+        return $order;
     }
 }

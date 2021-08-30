@@ -56,7 +56,7 @@ class Order
 
         if ($id < 0) 
         {
-            throw new OrderException('Invalid id to order');
+            throw new OrderException('Invalid id to order',100);
             return;
         }
 
@@ -67,17 +67,17 @@ class Order
     {
         $orderLines = (array) $orderLines;
 
-        // if (empty($orderLines))
-        // {
-        //     throw new OrderException('OrderLines is empty');
-        //     return;
-        // }
+        if (empty($orderLines))
+        {
+            throw new OrderException('OrderLines is empty',200);
+            return;
+        }
 
         foreach ($orderLines as $orderLine)
         {
             if(!is_a($orderLine,get_class(new OrderLine([]))))
             {
-                throw new OrderException('element in OrderLines is not to OrderLine class to the index: '.array_search($orderLine,$orderLines));
+                throw new OrderException('element in OrderLines is not to OrderLine class to the index: '.array_search($orderLine,$orderLines,),302);
                 return;
             }
         }
@@ -89,15 +89,15 @@ class Order
     {
 
         if( !is_a( $customer, get_class(new Customer([])) ) ){
-            throw new OrderException ("is not element to Customer class");
+            throw new OrderException ("is not element to Customer class",301);
             return;
         }
 
-        // if($customer->id() === null || $customer->id() <= 0 )
-        // {
-        //     throw new OrderException ("Invalid customer");
-        //     return;
-        // }
+        if($customer->id() === null || $customer->id() < 0 )
+        {
+            throw new OrderException ("Invalid customer",101);
+            return;
+        }
 
         $this->customer = $customer;
     }
@@ -106,7 +106,7 @@ class Order
     {
         if(!in_array( $status, [self::CART,self::BEING_DELIVERED, self::BEING_PROCESSED, self::FINISH] ))
         {
-            throw new OrderException('Invalid status');
+            throw new OrderException('Invalid status',100);
             return;
         }
 
@@ -124,27 +124,27 @@ class Order
 
     public function setOrderLine(OrderLine $orderLine): void
     {
-        $key = $this->OrderLineExist($orderLine);
+        $key = $this->foundOrderLineKey($orderLine);
 
         $this->orderLines[$key] = $orderLine;
     }
 
     public function unsetOrderLine(OrderLine $orderLine, bool $confirmation=false): void
     {
-        $key=$this->foundOrderLine($orderLine);
+        $key=$this->foundOrderLineKey($orderLine);
 
         if(!$confirmation)
         {
-            throw new OrderException('unset orderLine is not confirmed');
+            throw new OrderException('unset orderLine is not confirmed',402);
             return;
         }
 
-        $key = $this->OrderLineExist($orderLine);
+        $key = $this->foundOrderLineKey($orderLine);
         unset($this->orderLines[$key]);
     }
 
     // to modified OrderLine in array
-    public function foundOrderLine(OrderLine $orderLine): int|bool
+    public function foundOrderLineKey(OrderLine $orderLine): int|bool
     {
         foreach($this->orderLines as $key => $orderLineToUpdate)
         {
@@ -158,17 +158,16 @@ class Order
     }
 
     // order line exist
-    public function OrderLineExist($orderLine)
+    public function orderLineExist($orderLine)
     {
-        $key=$this->foundOrderLine($orderLine);
+        $key=$this->foundOrderLineKey($orderLine);
 
         if($key===false)
         {
-            throw new OrderException('Orderline not exist in order');
-            return;
+            return false;
         }
 
-        return $key;
+        return true;
     }
 
     // get cost total

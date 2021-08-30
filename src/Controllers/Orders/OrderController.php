@@ -23,12 +23,18 @@ class OrderController
 
     public static function cart()
     {
-        if(Connect::is_connected('customer'))
+
+        if(Connect::typeConnectionVerify('distributer'))
         {
-            $customer = new Customer($_SESSION['customer']);
-        }else
+            header('Location: /');
+            exit();
+        }
+
+        $customer=null;
+
+        if(Connect::typeConnectionVerify('customer'))
         {
-            $customer=null;
+            $customer = new Customer(Connect::getUser());
         }
 
         // initialization to cart
@@ -61,7 +67,7 @@ class OrderController
 
     public static function history()
     {
-        if(!Connect::is_connected('customer'))
+        if(!Connect::typeConnectionVerify('customer'))
         {
             header('Location: /');
             exit();
@@ -69,8 +75,11 @@ class OrderController
         
         $customer = new Customer($_SESSION['customer']);
         self::defineManager();
+
         $manager = self::$manager;
+
         $manager->setOrderSaver(new MySQLSaveOrder(ConnectDB::getInstanceToPDO()));
+
         $orders=[];
         try
         {

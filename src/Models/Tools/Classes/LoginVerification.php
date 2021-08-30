@@ -3,6 +3,7 @@
 namespace App\Models\Tools\Classes;
 
 use App\Domain\Accounts\Classes\Account;
+use App\Models\Tools\Classes\Exceptions\LoginVerificationException;
 
 class LoginVerification{
 
@@ -17,8 +18,9 @@ class LoginVerification{
     public function verify_email(Account $account)
     {
         if(!$this->email_exist($account))
-        {
-            return false;
+        {   
+            throw new LoginVerificationException ('email invalide',501);
+            return ;
         }   
 
         $table = array();
@@ -37,21 +39,15 @@ class LoginVerification{
                 return $account_found;
             }
         }
-        return false;
+        throw new LoginVerificationException ('password invalide',501);
+        return;
     }
 
     public function account_verify(Account $account)
     {
         $result = $this -> verify_email($account);
-        if( $result == false){
-            return ["error"=>"email","message"=>"email invalide"];    
-        }
 
         $account_founded = $this->verify_password($result, $account);
-        if($account_founded===false)
-        {
-            return ["error"=>"password","message"=>"password invalide"];    
-        }
 
         return $account_founded;
 
