@@ -3,6 +3,7 @@
 namespace App\Views\Orders;
 
 use App\Domain\Orders\Order;
+use App\Controllers\Tools\Connect;
 use App\Domain\Tools\NumberFormat;
 use App\Views\Generals\Classes\TemplateViews;
 
@@ -38,6 +39,18 @@ class OrderViews
         <p>
             <strong>Total:</strong> <?= NumberFormat::priceFormat($order-> getTotalCost()) ?>
         </p>
+        <?php if ($order->orderLines()!==[]):?>
+            <?php if(Connect::typeConnectionVerify('customer')): ?>
+        <p>
+            <a href="/order/confirm">Confirmer la commande</a>
+        </p>
+            <?php else:?>
+        <p>
+            <a href="/login">Connectez-vous</a><br/>
+            <a href="/signup">Inscrivez-vous</a>
+        </p>
+            <?php endif ?>
+        <?php endif ?>
 
         <p>
             <a href="/">retour</a>

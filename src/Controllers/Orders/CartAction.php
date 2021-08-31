@@ -130,7 +130,7 @@ class CartAction
         $data['order'] = $cart;
         $orderLine = new OrderLine($data);
 
-        if ($cart->orderLineExist($orderLine)) {
+        if (!$cart->orderLineExist($orderLine)) {
             return;
         }
 

@@ -2,7 +2,6 @@
 
 namespace App\Controllers\Orders;
 
-use App\Domain\Orders\Order;
 use App\Views\Orders\OrderViews;
 use App\Controllers\Tools\Connect;
 use App\Models\Tools\Classes\ConnectDB;
@@ -21,7 +20,7 @@ class OrderController
         self::$manager = new OrderManager(null);
     }
 
-    public static function cart()
+    public static function cart():void
     {
 
         if(Connect::typeConnectionVerify('distributer'))
@@ -65,7 +64,30 @@ class OrderController
 
     }
 
-    public static function history()
+
+    public static function confirm():void
+    {
+        if(Connect::typeConnectionVerify('distributer'))
+        {
+            header('Location: /');
+            exit();
+        }
+
+        $customer=null;
+
+        if(Connect::typeConnectionVerify('customer'))
+        {
+            $customer = new Customer(Connect::getUser());
+        }
+
+        $cart = CartAction::initCart();
+
+        $data['cart'] = $cart;
+
+    }
+
+
+    public static function history():void
     {
         if(!Connect::typeConnectionVerify('customer'))
         {

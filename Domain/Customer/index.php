@@ -109,7 +109,7 @@ $router->map('POST','/item/[a:page][slh]',function($page){
 // route orders
 $router->map('GET','/order/[a:page][slh]',function($page){
 
-    if(!method_exists(new OrderController,$page) OR ($page === 'cart')){
+    if(!method_exists(new OrderController,$page) || in_array($page,['address','delivery','payment'])){
         http_response_code(404);
         ErrorViews::error_404($page);
         return;
@@ -119,6 +119,18 @@ $router->map('GET','/order/[a:page][slh]',function($page){
     OrderController::$page();
 });
 
+
+$router->map('GET','/orderConfirmation/[a:page][slh]',function($page){
+
+    if(!in_array($page,['address','delivery','payment'])){
+        http_response_code(404);
+        ErrorViews::error_404($page);
+        return;
+    }
+
+    http_response_code(200);
+    OrderController::$page();
+});
 
 
 $match = $router->match();

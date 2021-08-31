@@ -9,6 +9,21 @@ class Distributer extends Account
 
     private string $nameDistrib;
     private string $description;
+    private array $deliveryType=[];
+    private array $paymentType=[];
+
+    // CONSTANTS
+        // Delivery constant
+    const GO_TO_STORE = 0;
+    const HOME_DELIVERY = 1;
+    const MEETING_POINT_DELIVERY= 2;
+
+        // Payment constant
+    const BY_CARD = 10;
+    const BY_MTN_MONEY = 11;
+    const BY_ORANGE_MONEY = 12;
+    const BY_PAYPAL = 13;
+    const ON_DELIVERY = 14;
 
     // constructor
     public function __construct(array $data){
