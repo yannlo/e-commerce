@@ -3,6 +3,7 @@
 
 namespace App\Domain\Items\Classes;
 
+use App\Domain\Pictures\Picture;
 use App\Domain\Items\Classes\Exceptions\ItemException;
 
 
@@ -11,7 +12,8 @@ class Item
     use \App\Domain\Tools\Hydration;
 
     private int $id;
-    protected string $itemName;
+    private Picture $picture;
+    private string $itemName;
     private int $stock;
     private int $price;
     private int $idDistrib;
@@ -26,6 +28,11 @@ class Item
     public function id():int
     {
         return $this->id;
+    }
+
+    public function picture(): picture
+    {
+        return $this->picture;
     }
 
     public function itemName():string
@@ -113,6 +120,11 @@ class Item
         }
 
         $this-> idDistrib = $idDistrib;
+    }
+
+    public function setPicture($picture): void
+    {
+        // code
     }
     
 }

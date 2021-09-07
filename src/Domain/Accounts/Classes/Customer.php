@@ -10,22 +10,22 @@ class Customer extends Account
     private string $firstName='';
     private string $lastName='';
     private string $birthDate='';
-    private string $phoneNumber ='';
+    private int $sex=self::UNKNOWN;
+    
+    // CONSTANTS
+    const UNKNOWN =0;
+    const MAN = 1;
+    const WOMAN = 2;
 
     // constructor
     public function __construct(array $data){
         $this->hydrate($data);
     }
-
+    
     //GETTERS
     public function firstName(): string
     {
         return (string) $this->firstName;
-    }
-
-    public function phoneNumber(): string
-    {
-        return (string) $this->phoneNumber;
     }
 
     public function birthDate(): string
@@ -36,6 +36,11 @@ class Customer extends Account
     public function lastName(): string
     {
         return (string) $this->lastName;
+    }
+
+    public function sex(): int
+    {
+        return $this->sex;
     }
 
     //SETTERS
@@ -65,26 +70,11 @@ class Customer extends Account
         $this-> lastName = $lastName;
     }
 
-
-    public function setPhoneNumber($phoneNumber): void
-    {
-        $phoneNumber = (string) $phoneNumber;
-
-        $phoneNumber = (string) preg_replace(' ', '', $phoneNumber);
-
-        if(strlen($phoneNumber)!==10)
-        {
-            throw new CustomerException("Invalid number phone",100);
-            return;
-        }
-
-        $this-> phoneNumber = $phoneNumber;
-    }
     
 
     public function setBirthDate(string $birthDate):void
     {
-        
+        // code
     }
 
     public function __isset($name): bool
@@ -95,4 +85,14 @@ class Customer extends Account
         return true;
     }
 
+    public function setSex(int $sex):void
+    {
+        if(!in_array($sex,[self::MAN,self::WOMAN, self::UNKNOWN]))
+        {
+            throw new CustomerException("Invalid parameter value for sex");
+            return;
+        }
+
+        $this->$sex = $sex;
+    }
 }

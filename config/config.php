@@ -2,6 +2,7 @@
 
 // globals variables
 
-// view Variables
+// Domain vaviables
+define('CITY',"Abidjan");
+define('COUNTRY',"Côte d'Ivoire");
 define('DOMAIN_NAME',"abidjan-style");
-define('HEAD_NAME', __FUNCTION__." - ".DOMAIN_NAME);

@@ -4,6 +4,7 @@ namespace App\Controllers\Orders;
 
 use App\Views\Orders\OrderViews;
 use App\Controllers\Tools\Connect;
+use App\Domain\Tools\JSONFormatter;
 use App\Models\Tools\Classes\ConnectDB;
 use App\Domain\Accounts\Classes\Customer;
 use App\Models\Orders\Classes\OrderManager;
@@ -58,8 +59,7 @@ class OrderController
             }
             CartAction::modifierCart($cart,$customer,$_POST,$operation);
         }
-           
-
+        
         OrderViews::Cart($cart);
 
     }

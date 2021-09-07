@@ -10,6 +10,7 @@ use App\Models\Tools\Classes\ConnectDB;
 use App\Domain\Accounts\Classes\Customer;
 use App\Models\Orders\Classes\OrderManager;
 use App\Models\Orders\Classes\OrderLineManager;
+use App\Domain\Orders\Exceptions\OrderLineException;
 use App\Models\Orders\Classes\SaveOrders\MySQLSaveOrder;
 use App\Models\Orders\Classes\SaveOrders\CookiesSaveOrder;
 
@@ -153,8 +154,11 @@ class CartAction
         $data['order'] = $cart;
         $orderLine = new OrderLine($data);
         
-        if ($cart->orderLineExist($orderLine)) {
+        try{
             $cart->setOrderLine($orderLine);
+        }
+        catch(OrderLineException $e){
+            $cart->addOrderLine($orderLine);
         }
 
 
@@ -168,8 +172,11 @@ class CartAction
         
         $orderLine = new OrderLine($data);
 
-        if (!$cart->orderLineExist($orderLine)){
+        try{
             $cart->addOrderLine($orderLine);
+        }
+        catch(OrderLineException $e){
+            $cart->setOrderLine($orderLine);
         }
     }
 }

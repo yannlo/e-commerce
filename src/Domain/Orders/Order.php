@@ -119,27 +119,48 @@ class Order
     // to modified OrderLines array
     public function addOrderLine(OrderLine $orderLine): void
     {
+        if(!$this->orderLineExist($orderLine))
+        {
+            throw new OrderException('Orderline exist',602);
+            return;
+        }
+
         $this->orderLines[] = $orderLine;
     }
 
     public function setOrderLine(OrderLine $orderLine): void
     {
+        
+        if(!$this->orderLineExist($orderLine))
+        {
+            throw new OrderException('Orderline not exist',602);
+            return;
+        }
+        
         $key = $this->foundOrderLineKey($orderLine);
-
+        
         $this->orderLines[$key] = $orderLine;
     }
 
     public function unsetOrderLine(OrderLine $orderLine, bool $confirmation=false): void
     {
-        $key=$this->foundOrderLineKey($orderLine);
-
+        
         if(!$confirmation)
         {
             throw new OrderException('unset orderLine is not confirmed',402);
             return;
         }
 
+        if(!$this->orderLineExist($orderLine))
+        {
+            throw new OrderException('Orderline not exist',602);
+            return;
+        }
+        
+
         $key = $this->foundOrderLineKey($orderLine);
+
+
         unset($this->orderLines[$key]);
     }
 

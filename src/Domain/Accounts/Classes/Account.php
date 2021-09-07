@@ -3,6 +3,10 @@
 
 namespace App\Domain\Accounts\Classes;
 
+use App\Domain\Address\Address;
+use App\Domain\Pictures\Picture;
+use App\Models\Tools\Classes\ConnectDB;
+use App\Models\Address\CommonListManager;
 use App\Domain\Accounts\Classes\Exceptions\AccountException;
 
 Abstract Class Account
@@ -10,8 +14,10 @@ Abstract Class Account
     use \App\Domain\Tools\Hydration;
     
     protected int $id=0;
+    protected Picture $picture;
     protected string $email='';
     protected string $password='';
+    protected Address $address;
 
     // GETTERS
     
@@ -19,6 +25,12 @@ Abstract Class Account
     {
         return $this->id;
     }
+
+    public function picture(): Picture
+    {
+        return $this->picture;
+    }
+
     public function email(): string
     {
         return $this->email;
@@ -29,6 +41,10 @@ Abstract Class Account
         return $this->password;
     }
 
+    public function address():Address
+    {
+        return $this->address;
+    }
 
     // SETTERS
     public function setId($id): void
@@ -43,6 +59,11 @@ Abstract Class Account
         }
 
         $this-> id = $id;
+    }
+
+    public function setPicture($picture):void
+    {
+        // code
     }
 
     public function setEmail($email): void
@@ -70,5 +91,29 @@ Abstract Class Account
         }
 
         $this -> password = $password;
+    }
+
+    public function setAddress($address):void
+    {
+        if(!is_a($address,get_class(new Address([]))))
+        {
+            throw new AccountException('Argument is not a address',301);
+            return;
+        }
+        if($address->city() !== CITY)
+        {
+            throw new AccountException('city in Address is not valid',101);
+            return;
+        }
+
+        $commonList = (new CommonListManager(ConnectDB::getInstanceToPDO()))->get() ;
+
+        if(!in_array($address->common(),$commonList))
+        {
+            throw new AccountException('common in Address is not valid',101);
+            return;
+        }
+        $this->address= $address;
+
     }
 }
