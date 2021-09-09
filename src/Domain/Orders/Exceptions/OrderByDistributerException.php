@@ -3,6 +3,6 @@
 namespace App\Domain\Orders\Exceptions;
 
 
-class OrderByDistributerException extends \Exception
+class OrderByDistributerException extends OrderException
 {
 }

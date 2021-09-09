@@ -3,7 +3,7 @@
 namespace App\Domain\Factory\PaymentFactory\Classes;
 
 use App\Domain\Payment\Interfaces\PaymentInterface;
-use App\Domain\PaymentFactory\Interfaces\PaymentFactoryInterface;
+use App\Domain\Factory\PaymentFactory\Interfaces\PaymentFactoryInterface;
 
 abstract class AbstractPaymentFactory implements PaymentFactoryInterface
 {

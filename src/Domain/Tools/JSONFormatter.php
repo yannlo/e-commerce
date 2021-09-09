@@ -20,7 +20,7 @@ class JSONFormatter
             'itemName'=>$item->itemName(),
             'stock' =>$item->stock(),
             'price' =>$item-> price(),
-            'idDistrib' =>$item->idDistrib()
+            'distributer' =>$item->distributer()
         ];
 
         return json_encode($data,JSON_FORCE_OBJECT);

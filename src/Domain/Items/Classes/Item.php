@@ -4,6 +4,7 @@
 namespace App\Domain\Items\Classes;
 
 use App\Domain\Pictures\Picture;
+use App\Domain\Accounts\Classes\Distributer;
 use App\Domain\Items\Classes\Exceptions\ItemException;
 
 
@@ -16,7 +17,7 @@ class Item
     private string $itemName;
     private int $stock;
     private int $price;
-    private int $idDistrib;
+    private Distributer $distributer;
 
     public function __construct(array $data)
     {
@@ -50,9 +51,9 @@ class Item
         return $this->price;
     }
 
-    public function idDistrib():int
+    public function distributer():Distributer
     {
-        return $this->idDistrib;
+        return $this->distributer;
     }
 
 
@@ -109,17 +110,21 @@ class Item
         $this-> stock = $stock;
     }
 
-    public function setIdDistrib($idDistrib): void
+    public function setDistributer($distributer): void
     {
-        $idDistrib = (int) $idDistrib;
+        if(!is_a($distributer,get_class(new Distributer([])) ))
+        {
+            throw new ItemException("Parameter is not distributer");
+            return; 
+        }
 
-        if($idDistrib <=0)
+        if($distributer->id() <=0)
         {
             throw new ItemException("Invalid id to distributer");
             return; 
         }
 
-        $this-> idDistrib = $idDistrib;
+        $this-> distributer = $distributer;
     }
 
     public function setPicture($picture): void

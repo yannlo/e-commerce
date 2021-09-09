@@ -8,6 +8,7 @@ require_once '../../config/config_db.php';
 
 
 
+use App\Controllers\Tests\TestController;
 use  App\Controllers\Items\ItemController;
 use  App\Views\Generals\Classes\ErrorViews;
 use App\Controllers\Orders\OrderController;
@@ -22,6 +23,22 @@ $router -> addMatchTypes(['slh'=>'[/]?$']);
 $router->map('GET','/', function(){
     http_response_code(200);
     CustomerController::index();
+    return;
+
+});
+
+// test
+$router->map('GET','/test/[a:page][slh]', function($page){
+
+    if(!method_exists(new TestController,$page)){
+        http_response_code(404);
+        ErrorViews::error_404($page);
+        return;
+    }
+
+    http_response_code(200);
+    TestController::$page();
+
     return;
 
 });

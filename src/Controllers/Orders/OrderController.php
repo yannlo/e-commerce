@@ -87,6 +87,11 @@ class OrderController
     }
 
 
+    public static function orderInProgress():void
+    {
+        
+    }
+
     public static function history():void
     {
         if(!Connect::typeConnectionVerify('customer'))

@@ -78,7 +78,7 @@ class CartAction
 
             self::$manager->orderSaver()->update($cart);
         }
-
+        
         return $cart;
 
         

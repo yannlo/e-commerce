@@ -28,7 +28,7 @@ class ItemController
         $distributerManager = new DistributerManager(ConnectDB::getInstanceToPDO());
 
         $item = $itemManager->getOnce($id);
-        $distributer = $distributerManager->getOnce($item->idDistrib());
+        $distributer = $distributerManager->getOnce($item->distributer());
 
         $trueSlug= URLFormat::slugItemFormat($item); 
         $trueURL= URLFormat::itemFormat($item);
@@ -54,7 +54,7 @@ class ItemController
         {
 
             $table = $_POST;
-            $table['idDistrib'] = $_SESSION['distributer']['id'];
+            $table['distributer'] = $_SESSION['distributer']['id'];
             $item = new Item($table);
 
             $manager = new ItemManager(ConnectDB::getInstanceToPDO());

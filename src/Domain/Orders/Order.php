@@ -9,10 +9,10 @@ class Order
 {
     use \App\Domain\Tools\Hydration;
 
-    private int $id=0;
-    private array $orderLines=[];
-    private Customer $customer;
-    private int $status = self::CART;
+    protected int $id=0;
+    protected array $orderLines=[];
+    protected Customer $customer;
+    protected int $status = self::CART;
 
     // CONSTANTS
     const CART = 0;
@@ -63,7 +63,7 @@ class Order
         $this->id = $id;
     }
 
-    public function setOrderLines($orderLines): void
+    public function setOrderLines(array $orderLines): void
     {
         $orderLines = (array) $orderLines;
 
@@ -119,7 +119,7 @@ class Order
     // to modified OrderLines array
     public function addOrderLine(OrderLine $orderLine): void
     {
-        if(!$this->orderLineExist($orderLine))
+        if($this->orderLineExist($orderLine))
         {
             throw new OrderException('Orderline exist',602);
             return;
@@ -178,8 +178,16 @@ class Order
         return false;
     }
 
-    // order line exist
-    public function orderLineExist($orderLine)
+    // order line exist       
+    /**
+     * orderLineExist
+     *
+     * 
+     * @param  mixed $orderLine
+     * @return bool
+     * true if the orderlin in parameter exist
+     */
+    public function orderLineExist($orderLine): bool
     {
         $key=$this->foundOrderLineKey($orderLine);
 

@@ -16,6 +16,7 @@ class ItemManager
         $request = $this -> db -> query("SELECT * FROM items");
         $table =[];
         while($data = $request->fetch()){
+            unset($data['distributer']);
             $table[]= new Item($data);
         }
         return $table;
@@ -33,14 +34,14 @@ class ItemManager
 
     public function add(Item $item): bool
     {
-        $request = $this -> db -> prepare("INSERT INTO items (itemName, price, stock, idDistrib) VALUES (:itemName, :price, :stock, :idDistrib)");
+        $request = $this -> db -> prepare("INSERT INTO items (itemName, price, stock, distributer) VALUES (:itemName, :price, :stock, :distributer)");
         try {
 
             $request->execute(array(
                 "itemName" => $item -> itemName(),
                 "price" => $item -> price(),
                 "stock" => $item -> stock(),
-                "idDistrib" => $item -> idDistrib()
+                "distributer" => $item -> distributer()
             ));
             return true;
         }
@@ -53,7 +54,7 @@ class ItemManager
 
     public function update(Item $item): bool
     {
-        $request = $this -> db -> prepare("UPDATE items SET itemName= :itemName, price=:price,stock=:stock, idDistrib=:idDistrib WHERE id=:id");
+        $request = $this -> db -> prepare("UPDATE items SET itemName= :itemName, price=:price,stock=:stock, distributer=:distributer WHERE id=:id");
         try{
 
             $request->execute(array(
@@ -61,7 +62,7 @@ class ItemManager
                 "itemName" => $item -> itemName(),
                 "price" => $item -> price(),
                 "price" => $item -> stock(),
-                "idDistrib" => $item -> idDistrib()
+                "distributer" => $item -> distributer()
             ));
             return true;
         }

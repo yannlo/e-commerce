@@ -2,6 +2,7 @@
 
 namespace App\Models\Accounts;
 
+use App\Domain\Items\Classes\Item;
 use App\Domain\Accounts\Classes\Distributer;
 
 class DistributerManager
@@ -28,6 +29,25 @@ class DistributerManager
             "id" => htmlspecialchars($id)
         ));
         return new Distributer($request->fetch(\PDO::FETCH_ASSOC));
+        }
+        catch(\PDOException $e)
+        {
+            echo $e -> getMessage();
+            return false;
+        }
+    }
+
+
+    public function getByItem(Item $item): Distributer|bool
+    {
+        $request = $this -> db -> prepare("SELECT * FROM items  WHERE id = :id");
+        try{
+        $request ->execute(array(
+            "id" => htmlspecialchars($item->id())
+        ));
+
+        return $this->getOnce($request->fetch()['distributer']);
+        
         }
         catch(\PDOException $e)
         {

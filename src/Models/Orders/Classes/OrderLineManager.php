@@ -63,6 +63,7 @@ class OrderLineManager
         $request = $this-> db -> prepare("INSERT INTO orderlines (item,quantity,`order`) VALUES(:item,:quantity,:order)");
         try
         {
+
             $request ->execute(array(
                 'item'=> $orderLine->item()->id(),
                 'quantity'=> $orderLine->quantity(),

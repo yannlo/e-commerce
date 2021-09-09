@@ -5,33 +5,62 @@ namespace App\Domain\Orders;
 
 use App\Domain\Orders\Order;
 use App\Domain\Orders\OrderLine;
-use App\Models\Tools\Classes\ConnectDB;
-use App\Models\Accounts\DistributerManager;
+use App\Domain\Orders\FinalOrder;
 use App\Domain\Accounts\Classes\Distributer;
-use App\Domain\Payment\Interfaces\PaymentInterface;
-use App\Domain\Delivery\Interfaces\DeliveryInterface;
 use App\Domain\Orders\Exceptions\OrderByDistributerException;
+use App\Domain\Factory\DeliveryFactory\Interfaces\DeliveryFactoryInterface;
 
-class OrderByDistributer extends Order
+final class OrderByDistributer extends Order
 {
     private Distributer $distributer;
-    private DeliveryInterface $deliveryMethod;
-    private PaymentInterface $paymentMethod;
+    private FinalOrder $order;
+    private DeliveryFactoryInterface $deliveryMethod;
 
-    private int $status = self::BEING_PROCESSED;
+    protected int $status = self::BEING_PROCESSED;
 
+    public function order(): FinalOrder
+    {
+        return $this->order;
+    }
+
+    public function setOrder($order): void
+    {
+        $this->order = $order;
+    }
+
+
+    public function setOrderLines(array $orderLines):void
+    {
+        if(!isset($this->distributer))
+        {
+            $this->distributer =$orderLines[0]->item()->distributer();
+        }
+
+        
+        $orderLines = array_filter($orderLines, function($orderLine){
+            
+            if($orderLine->item()->distributer()->id()!== $this->distributer->id())
+            {
+                return false;
+            }
+
+            return true;
+        });
+
+        
+        parent::setOrderLines($orderLines);
+          
+    }    
     public function addOrderLine(OrderLine $orderLine): void
     {
-
-        if (empty($orderLines))
+        if(empty($this->orderLines))
         {
             parent::addOrderLine($orderLine);
-            $distributerManager = new DistributerManager(ConnectDB::getInstanceToPDO());
-            $this->distributer= $distributerManager ->getOnce($this->orderLines[0]->item()->idDistrib());
+            $this->distributer = $orderLine->item()->distributer();
             return;
         }
 
-        if($orderLine->item()->idDistrib()!== $this->distributer->id())
+        if($orderLine->item()->distributer()->id()!== $this->distributer->id())
         {
             throw new OrderByDistributerException('item distributer is diferent');
             return;
@@ -41,16 +70,11 @@ class OrderByDistributer extends Order
         
     }
 
-    public function getCost()
+    public function getTotalCost():int
     {
         // recupere le prix de la livraison
-
-        // ...
-
-
-        parent::getTotalCost();
+        return $this->deliveryMethod->price() + parent::getTotalCost();
     }
-
 
     public function distributer(): Distributer
     {
