@@ -5,8 +5,10 @@ Error list:
         code: 2xx -> object or element array is empty
         code: 3xx -> object or element type is invalid
         code: 4xx -> not confirm action
-        code: 5xx -> not found object or element
+        code: 5xx -> not found or not exist the object or the element
         code: 6xx -> impossible action
+        code: 7xx -> failed action
+        code: 8xx -> inconsistent result
 
     ElementError:
         code: x00 -> self object

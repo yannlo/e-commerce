@@ -7,7 +7,7 @@ Class Connect
 {
     private static array $userType = array(
         "customer",
-        "distributer"
+        "distributor"
     );
 
 

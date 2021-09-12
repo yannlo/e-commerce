@@ -12,7 +12,7 @@ class itemViews
     public static function item(array $data=[]): void
     {
         $item = $data['item'];
-        $distributer = $data['distributer'];
+        $distributor = $data['distributor'];
 
         ob_start();
         ?>
@@ -23,10 +23,10 @@ class itemViews
                 <strong>Identifiant de l'article:</strong> <?= $item-> id() ?> <br/>
                 <strong>Nom de l'article:</strong> <?= $item-> itemName() ?> <br/>
                 <strong>Prix de l'article:</strong> <?= NumberFormat::priceFormat($item->price()) ?> <br/>
-                <strong>Nom du distributer:</strong> <?= $distributer-> nameDistrib() ?>
+                <strong>Nom du distributor:</strong> <?= $distributor-> nameDistrib() ?>
             </p>
 
-            <?php if(empty($_SESSION['distributer']) || !isset($_SESSION['distributer'])):?>
+            <?php if(empty($_SESSION['distributor']) || !isset($_SESSION['distributor'])):?>
                 <h2>Commander un article</h2>
             <form action="/cart" method="post">
                 <p>
@@ -37,7 +37,7 @@ class itemViews
             </form>
             <?php endif ?>
 
-            <?php if(!empty($_SESSION['distributer'])&&isset($_SESSION['distributer'])):?>
+            <?php if(!empty($_SESSION['distributor'])&&isset($_SESSION['distributor'])):?>
             <p>
                 <a href="/item/delete?id=<?= $item-> id()?>">suprimerl'aritcle</a>
             </p>
@@ -62,7 +62,7 @@ class itemViews
         <div>
             <h2>Liste des articles</h2>
 
-            <?php if(!empty($_SESSION['distributer']) && isset($_SESSION['distributer'])):?>
+            <?php if(!empty($_SESSION['distributor']) && isset($_SESSION['distributor'])):?>
             <p>
                 <a href="/item/add">Ajouter un article</a>
             </p>

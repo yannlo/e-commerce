@@ -2,5 +2,5 @@
 
 namespace App\Domain\Accounts\Classes\Exceptions;
 
-class DistributerException
+class DistributorException
 { } 

@@ -3,20 +3,24 @@
 namespace App\Models\Items;
 
 use App\Domain\Items\Classes\Item;
+use App\Models\Tools\Classes\ConnectDB;
+use App\Models\Accounts\DistributorManager;
 
 
 class ItemManager
 {
 
     public function __construct (private \PDO $db)
-    { }
+    {
+        $this->distributorManager = new DistributorManager(ConnectDB::getInstanceToPDO());
+    }
 
     public function getAll(): array
     {
         $request = $this -> db -> query("SELECT * FROM items");
         $table =[];
         while($data = $request->fetch()){
-            unset($data['distributer']);
+            unset($data['distributor']);
             $table[]= new Item($data);
         }
         return $table;
@@ -28,20 +32,21 @@ class ItemManager
         $request->execute(array(
             "id"=>$id
         ));
-
-        return new Item($request->fetch());
+        $data = $request->fetch();
+        $data['distributor'] = $this->distributorManager->getOnce($data['distributor']);
+        return new Item($data);
     }
 
     public function add(Item $item): bool
     {
-        $request = $this -> db -> prepare("INSERT INTO items (itemName, price, stock, distributer) VALUES (:itemName, :price, :stock, :distributer)");
+        $request = $this -> db -> prepare("INSERT INTO items (itemName, price, stock, distributor) VALUES (:itemName, :price, :stock, :distributor)");
         try {
 
             $request->execute(array(
                 "itemName" => $item -> itemName(),
                 "price" => $item -> price(),
                 "stock" => $item -> stock(),
-                "distributer" => $item -> distributer()
+                "distributor" => $item -> distributor()
             ));
             return true;
         }
@@ -54,7 +59,7 @@ class ItemManager
 
     public function update(Item $item): bool
     {
-        $request = $this -> db -> prepare("UPDATE items SET itemName= :itemName, price=:price,stock=:stock, distributer=:distributer WHERE id=:id");
+        $request = $this -> db -> prepare("UPDATE items SET itemName= :itemName, price=:price,stock=:stock, distributor=:distributor WHERE id=:id");
         try{
 
             $request->execute(array(
@@ -62,7 +67,7 @@ class ItemManager
                 "itemName" => $item -> itemName(),
                 "price" => $item -> price(),
                 "price" => $item -> stock(),
-                "distributer" => $item -> distributer()
+                "distributor" => $item -> distributor()
             ));
             return true;
         }

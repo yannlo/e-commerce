@@ -13,10 +13,10 @@ use App\Models\Tools\Classes\ConnectDB;
 use App\Controllers\Orders\OrderBuilder;
 use App\Models\Accounts\CustomerManager;
 use App\Domain\Accounts\Classes\Customer;
-use App\Domain\Orders\OrderByDistributer;
-use App\Models\Accounts\DistributerManager;
-use App\Domain\Accounts\Classes\Distributer;
-use App\Models\Orders\Classes\OrderByDistributerManager;
+use App\Domain\Orders\OrderByDistributor;
+use App\Models\Accounts\DistributorManager;
+use App\Domain\Accounts\Classes\Distributor;
+use App\Models\Orders\Classes\OrderByDistributorManager;
 
 
 class TestController
@@ -28,7 +28,7 @@ class TestController
         
         foreach($items as $item)
         {
-            $item->setDistributer((new DistributerManager(ConnectDB::getInstanceToPDO()))->getByItem($item));
+            $item->setDistributor((new DistributorManager(ConnectDB::getInstanceToPDO()))->getByItem($item));
         }
 
         $orderLine1 = new OrderLine([
@@ -68,13 +68,9 @@ class TestController
 
         $cart = $orderBuilder->add($cart);
 
-        $finalOrder = new FinalOrder(array(
-            "id" => $cart->id(),
-            "customer"=>  $cart->customer(),
-            "orderLines"=> $cart->orderLines()
-        ));
-        $orderBuilder->update($finalOrder);
+        $finalOrder = $orderBuilder->confirm($cart);
         
+        dump($finalOrder);
         echo "end";
 
 

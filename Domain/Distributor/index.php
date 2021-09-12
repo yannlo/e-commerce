@@ -8,7 +8,7 @@ require_once '../../config/config_db.php';
 
 
 
-use  App\Controllers\Accounts\Classes\DistributerController;
+use  App\Controllers\Accounts\Classes\DistributorController;
 use  App\Controllers\Items\ItemController;
 use  App\Views\Generals\Classes\ErrorViews;
 
@@ -22,7 +22,7 @@ $router -> addMatchTypes(['slh'=>'[/]?$']);
 // home
 $router->map('GET','/', function(){
     http_response_code(200);
-    DistributerController::index(); 
+    DistributorController::index(); 
     return;
 });
 
@@ -63,18 +63,18 @@ $router->map('POST','/item/[a:page][slh]',function($page){
 
 });
 
-// router distributer
+// router distributor
 
 $router->map('GET','/[a:page][slh]',function($page){
 
-    if(!method_exists(new DistributerController,$page)){
+    if(!method_exists(new DistributorController,$page)){
         http_response_code(404);
         ErrorViews::error_404($page);
         return;
     }
     
     http_response_code(200);
-    DistributerController::$page();
+    DistributorController::$page();
     
 
 });
@@ -88,7 +88,7 @@ $router->map('POST','/[a:page][slh]',function($page){
     }
 
     http_response_code(200);
-    DistributerController::$page();
+    DistributorController::$page();
 
 });
 

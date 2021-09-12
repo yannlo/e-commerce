@@ -8,8 +8,8 @@ use App\Controllers\Tools\Connect;
 use App\Domain\Items\Classes\Item;
 use  App\Controllers\Tools\URLFormat;
 use App\Models\Tools\Classes\ConnectDB;
-use App\Models\Accounts\DistributerManager;
-use App\Controllers\Accounts\Classes\DistributerController;
+use App\Models\Accounts\DistributorManager;
+use App\Controllers\Accounts\Classes\DistributorController;
 
 class ItemController 
 {   
@@ -25,10 +25,10 @@ class ItemController
 
         $itemManager = new ItemManager(ConnectDB::getInstanceToPDO());
 
-        $distributerManager = new DistributerManager(ConnectDB::getInstanceToPDO());
+        $distributorManager = new DistributorManager(ConnectDB::getInstanceToPDO());
 
         $item = $itemManager->getOnce($id);
-        $distributer = $distributerManager->getOnce($item->distributer());
+        $distributor = $item->distributor();
 
         $trueSlug= URLFormat::slugItemFormat($item); 
         $trueURL= URLFormat::itemFormat($item);
@@ -39,22 +39,22 @@ class ItemController
             exit();
         }
 
-        $data = ["item"=>$item, "distributer"=>$distributer];
+        $data = ["item"=>$item, "distributor"=>$distributor];
         ItemViews::item($data);
     }
 
     public static function add(): void
     {
-        if(!Connect::typeConnectionVerify('distributer'))
+        if(!Connect::typeConnectionVerify('distributor'))
         {
-            DistributerController::redirectory('login');
+            DistributorController::redirectory('login');
         }
 
         if(!empty($_POST))
         {
 
             $table = $_POST;
-            $table['distributer'] = $_SESSION['distributer']['id'];
+            $table['distributor'] = $_SESSION['distributor']['id'];
             $item = new Item($table);
 
             $manager = new ItemManager(ConnectDB::getInstanceToPDO());

@@ -9,7 +9,7 @@ use App\Views\Generals\Interfaces\GeneralViewsInterface;
 
 
 
-class DistributerViews implements AccountInterface, GeneralViewsInterface
+class DistributorViews implements AccountInterface, GeneralViewsInterface
 {
     public static function index(array $data=[]): void
     {
@@ -99,15 +99,15 @@ class DistributerViews implements AccountInterface, GeneralViewsInterface
     
     public static function account(array $data=[]): void
     {
-        $distributer =$data['distributer'];
+        $distributor =$data['distributor'];
         ob_start();
         ?>
         <h1>Imformation de compte distributeur </h1>
         <p>
-            <strong>Identifiant:</strong> <?= $distributer->id()?> <br/>
-            <strong>Nom:</strong> <?= $distributer->nameDistrib()?> <br/>
-            <strong>email:</strong> <?= $distributer->email()?> <br/>
-            <strong>Description:</strong> <?= $distributer->description()?> <br/>
+            <strong>Identifiant:</strong> <?= $distributor->id()?> <br/>
+            <strong>Nom:</strong> <?= $distributor->nameDistrib()?> <br/>
+            <strong>email:</strong> <?= $distributor->email()?> <br/>
+            <strong>Description:</strong> <?= $distributor->description()?> <br/>
         </p>
         <p>
             <a href="/">Retour a la page d'accueil</a>

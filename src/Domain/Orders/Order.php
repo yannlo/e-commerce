@@ -2,211 +2,176 @@
 
 namespace App\Domain\Orders;
 
-use App\Domain\Accounts\Classes\Customer;
 use App\Domain\Orders\Exceptions\OrderException;
+use App\Domain\Orders\Exceptions\OrderByDistributorException;
 
-class Order
+/**
+ * Order
+ * 
+ * use to represent Order in database
+ * 
+ */
+final class Order extends AbstractOrder
 {
-    use \App\Domain\Tools\Hydration;
 
-    protected int $id=0;
-    protected array $orderLines=[];
-    protected Customer $customer;
-    protected int $status = self::CART;
+    //variables
+    private array $ordersByDistributor = [];
+    private int $status;
 
-    // CONSTANTS
-    const CART = 0;
-    const BEING_PROCESSED = 1;
-    const BEING_DELIVERED = 2;
-    const FINISH = 3;
-
-    public function __construct(array $data)
+    // GETTERS    
+    /**
+     * ordersByDistributor
+     * 
+     * get orderByDistributor array
+     *
+     * @return array
+     */
+    public function ordersByDistributor(): array
     {
-        $this->orderLines = array();
-        $this->customer= new Customer([]);
-        $this-> hydrate($data);
-    }
-
-    // GETTERS
-    public function id():int
-    {
-        return $this->id;
-    }
-
-    public function orderLines(): array
-    {
-        return $this->orderLines;
+        return $this->ordersByDistributor;
     }
     
-    public function  customer(): Customer
-    {
-        return $this->customer;
-    }
-
+    /**
+     * status
+     *
+     * get status value
+     * 
+     * @return int
+     */
     public function status(): int
     {
         return $this->status;
     }
 
 
-    // SETTERS
-    public function setId($id): void
+    // SETTERS    
+    /**
+     * setOrdersByDistributor
+     * 
+     * set orderByDistributor array
+     *
+     * @param  array $ordersByDistributor
+     * @return void
+     */
+    public function setOrdersByDistributor(array $ordersByDistributor): void
     {
-        $id = (int) $id;
-
-        if ($id < 0) 
-        {
-            throw new OrderException('Invalid id to order',100);
-            return;
-        }
-
-        $this->id = $id;
-    }
-
-    public function setOrderLines(array $orderLines): void
-    {
-        $orderLines = (array) $orderLines;
-
         if (empty($orderLines))
         {
-            throw new OrderException('OrderLines is empty',200);
+            throw new OrderException('ordersByDistributer is empty',200);
             return;
         }
 
-        foreach ($orderLines as $orderLine)
+        foreach($ordersByDistributor as $orderByDistributor)
         {
-            if(!is_a($orderLine,get_class(new OrderLine([]))))
+            if(!is_a($orderByDistributor,get_class(new OrderByDistributor([]))))
             {
-                throw new OrderException('element in OrderLines is not to OrderLine class to the index: '.array_search($orderLine,$orderLines,),302);
+                throw new OrderException('incorrect value in array',302);
                 return;
+
+                $orderByDistributor->setOrder($this);
+
             }
         }
-
-        $this->orderLines = $orderLines;
+        
+        $this->ordersByDistributor = $ordersByDistributor;
     }
-
-    public function setCustomer($customer): void
+    
+    /**
+     * setStatus
+     *
+     * set status value
+     * 
+     * @param  int $status
+     * @return void
+     */
+    private function setStatus($status):void
     {
-
-        if( !is_a( $customer, get_class(new Customer([])) ) ){
-            throw new OrderException ("is not element to Customer class",301);
-            return;
-        }
-
-        if($customer->id() === null || $customer->id() < 0 )
-        {
-            throw new OrderException ("Invalid customer",101);
-            return;
-        }
-
-        $this->customer = $customer;
-    }
-
-    public function setStatus($status): void
-    {
-        if(!in_array( $status, [self::CART,self::BEING_DELIVERED, self::BEING_PROCESSED, self::FINISH] ))
-        {
-            throw new OrderException('Invalid status',100);
-            return;
-        }
+        $status = (int)$status;
 
         $this->status = $status;
-
     }
 
-    // METHODS
 
-    // to modified OrderLines array
-    public function addOrderLine(OrderLine $orderLine): void
-    {
-        if($this->orderLineExist($orderLine))
-        {
-            throw new OrderException('Orderline exist',602);
-            return;
-        }
-
-        $this->orderLines[] = $orderLine;
-    }
-
-    public function setOrderLine(OrderLine $orderLine): void
-    {
-        
-        if(!$this->orderLineExist($orderLine))
-        {
-            throw new OrderException('Orderline not exist',602);
-            return;
-        }
-        
-        $key = $this->foundOrderLineKey($orderLine);
-        
-        $this->orderLines[$key] = $orderLine;
-    }
-
-    public function unsetOrderLine(OrderLine $orderLine, bool $confirmation=false): void
-    {
-        
-        if(!$confirmation)
-        {
-            throw new OrderException('unset orderLine is not confirmed',402);
-            return;
-        }
-
-        if(!$this->orderLineExist($orderLine))
-        {
-            throw new OrderException('Orderline not exist',602);
-            return;
-        }
-        
-
-        $key = $this->foundOrderLineKey($orderLine);
-
-
-        unset($this->orderLines[$key]);
-    }
-
-    // to modified OrderLine in array
-    public function foundOrderLineKey(OrderLine $orderLine): int|bool
-    {
-        foreach($this->orderLines as $key => $orderLineToUpdate)
-        {
-            if($orderLineToUpdate->item()->id() === $orderLine->item()->id())
-            {
-                return $key;
-            }
-        }
-
-        return false;
-    }
-
-    // order line exist       
+    // metthod
+    // status method    
     /**
-     * orderLineExist
-     *
+     * updateStatus
      * 
-     * @param  mixed $orderLine
-     * @return bool
-     * true if the orderlin in parameter exist
+     * use to modifier order status 
+     * 
+     * it select the minimum status value and mofifier the order status with this value
+     *
+     * @return void
      */
-    public function orderLineExist($orderLine): bool
+    private function updateStatus(): void
     {
-        $key=$this->foundOrderLineKey($orderLine);
-
-        if($key===false)
+        $stateList = array();
+        foreach($this->ordersByDistributor() as $orderByDistributor)
         {
-            return false;
+            $stateList[]= $orderByDistributor->status();
         }
 
-        return true;
+        $this->setStatus(min($stateList));
     }
 
-    // get cost total
+    //  get total cost    
+    /**
+     * getTotalCost
+     * 
+     * return the addition of the entire order by distributor
+     *
+     * @return int
+     */
     public function getTotalCost(): int
     {
-        $totalCost= 0;
-        foreach($this->orderLines  as $orderLine){
-            $totalCost += $orderLine -> getCost();
+        $cost=0;
+        foreach($this->ordersByDistributor as $orderByDistribut)
+        {
+            $cost+=$orderByDistribut->getTotalCost();
+        }
+        return $cost;
+    }
+
+}
+
+//private function OrderLineByItemDistributor(array $data)
+{
+    $data["order"]= $this;
+    unset($data['orderLines']);
+    
+    foreach($this->orderLines as $orderLine)
+    {
+        if(empty($this->ordersByDistributor))
+        {
+            $this-> addOrderByDistributor($data);
+            end($this-> ordersByDistributor)->addOrderLine($orderLine);
+            continue;
         }
 
-        return $totalCost;
+        
+        $is_include= false;
+        foreach($this->ordersByDistributor as  $orderByDistributor)
+        {                
+            try
+            {
+                $orderByDistributor->addOrderLine($orderLine);
+                $is_include= true;
+                break;
+            }
+            catch(OrderByDistributorException $e)
+            {
+                continue;
+            }
+
+        }
+
+        if(!$is_include)
+        {
+            $this-> addOrderByDistributor($data);
+            end($this-> ordersByDistributor)->addOrderLine($orderLine);
+        }
+
+
+
     }
 }

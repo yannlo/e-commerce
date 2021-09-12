@@ -2,7 +2,7 @@
 
 namespace App\Models\Orders\Classes\Exceptions;
 
-class CookiesSaveOrderException extends \Exception
+class CookiesException extends \Exception
 {
     
 }

@@ -2,9 +2,9 @@
 
 
 namespace App\Domain\Accounts\Classes;
-use App\Domain\Accounts\Classes\Exceptions\DistributerException;
+use App\Domain\Accounts\Classes\Exceptions\DistributorException;
 
-class Distributer extends Account
+class Distributor extends Account
 {
 
     private string $nameDistrib;
@@ -35,7 +35,7 @@ class Distributer extends Account
 
         if(strlen($nameDistrib)<4)
         {
-            throw new DistributerException("le nom saisi ne contient pas plus de 3 caracteres");
+            throw new DistributorException("le nom saisi ne contient pas plus de 3 caracteres");
             return; 
         }
         
@@ -49,13 +49,13 @@ class Distributer extends Account
         
         if(strlen($description)<0)
         {
-            throw new DistributerException("Veuillez saisir une description");
+            throw new DistributorException("Veuillez saisir une description");
             return;
         }
 
         if(strlen($description)>1024)
         {
-            throw new DistributerException("La description est trop long");
+            throw new DistributorException("La description est trop long");
             return;
         }
 

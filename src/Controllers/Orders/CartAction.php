@@ -2,181 +2,183 @@
 
 namespace App\Controllers\Orders;
 
-use App\Domain\Orders\Order;
+use App\Domain\Orders\Cart;
 use App\Domain\Orders\OrderLine;
 use App\Models\Items\ItemManager;
 use App\Controllers\Tools\Connect;
 use App\Models\Tools\Classes\ConnectDB;
 use App\Domain\Accounts\Classes\Customer;
-use App\Models\Orders\Classes\OrderManager;
-use App\Models\Orders\Classes\OrderLineManager;
-use App\Domain\Orders\Exceptions\OrderLineException;
-use App\Models\Orders\Classes\SaveOrders\MySQLSaveOrder;
-use App\Models\Orders\Classes\SaveOrders\CookiesSaveOrder;
+use App\Models\Orders\Classes\CartManager;
+use App\Models\Orders\Classes\SaveCarts\MySQL;
+use App\Domain\Orders\Exceptions\CartException;
+use App\Models\Orders\Classes\SaveCarts\Cookies;
+
 
 class CartAction
 {
-    private static OrderManager $manager;
+    private static CartManager $cartManager;
 
-    public static function initCart(): Order
+    public static function initialization(): Cart
     {
-        self::$manager= new OrderManager(new CookiesSaveOrder());
+        self::$cartManager = new CartManager(new Cookies);
 
-        if(isset($_COOKIE["cart"]))
-        {
-            $cart = self::$manager->orderSaver()->getCart();
-        }
+        $cartSaver = self::$cartManager->cartSaver();
 
-        if(!Connect::typeConnectionVerify('customer'))
+        if($cartSaver->cartExist())
         {
-            if(isset($cart))
-            {
-                return $cart;
-            }
-    
-            $cart = new Order([]);
-            self::$manager->orderSaver()->add($cart);
-            return $cart;
+            $cartInCookies = $cartSaver->get();
         }
 
 
-        $customer = new Customer(Connect::getUser());
-
-        self::$manager->orderSaver()->delete(null);
+        $isConneted= Connect::typeConnectionVerify('customer');
         
-        self::$manager= new OrderManager(new MySQLSaveOrder(ConnectDB::getInstanceToPDO()));  
-
-        $cartByMySQL = self::$manager->orderSaver()->getCartByCustomerIfExist($customer);
-
-        if($cartByMySQL === false && !isset($cart))
+        if($isConneted)
         {
-            $cart = new Order(['customer' => $customer]);
+            self::$cartManager->setCartSaver(new MySQL(ConnectDB::getInstanceToPDO()));
 
-            self::$manager->orderSaver()->add($cart);
+            $cartSaver = self::$cartManager->cartSaver();
 
-            $cart = self::$manager->orderSaver()->getCartByCustomerIfExist($customer);
-        }
+            $customer = new Customer(Connect::getUser());
 
-        else if($cartByMySQL !== false && !isset($cart))
-        {
-            $cart = $cartByMySQL;
-        }
-
-        else if($cartByMySQL !== false && isset($cart))
-        {
-            foreach($cart->orderLines() as $orderLine)
+            if($cartSaver->cartExist($customer))
             {
-                if($cartByMySQL->orderLineExist($orderLine))
+                $cartInMySql = $cartSaver->get($customer);
+            }
+        }
+ 
+
+        if(!isset($cartInCookies) && !$isConneted)
+        {
+            $cart = new Cart([]);
+
+            self::$cartManager->setCartSaver(new Cookies);
+
+            $cartSaver = self::$cartManager->cartSaver();
+                
+            $cartSaver->add($cart);
+
+            $cart = $cartSaver->get($customer);
+            
+        }
+        else if(isset($cartInCookies) && $isConneted)
+        {
+
+            self::$cartManager->setCartSaver(new Cookies);
+
+            $cartSaver = self::$cartManager->cartSaver();
+
+            $cartSaver->delete();
+
+            if(!isset($cartInMySql))
+            {
+                self::$cartManager->setCartSaver(new MySQL(ConnectDB::getInstanceToPDO()));
+
+                $cartSaver = self::$cartManager->cartSaver();
+
+                $cartInCookies->setCustomer($customer);
+
+                $cartSaver->add($cartInCookies);
+
+                $cart = $cartSaver->get($customer);
+            }
+            else
+            {
+                
+                foreach($cartInCookies->orderLines() as $orderLine)
                 {
-                    continue;
+                    if(!$cartInMySql->orderLineExist($orderLine))
+                    {
+                        $cartInMySql->addOrderLine($orderLine);
+                    }
                 }
-                $orderLine ->setOrder($cartByMySQL);
+    
+                self::$cartManager->setCartSaver(new MySQL(ConnectDB::getInstanceToPDO()));
+    
+                $cartSaver = self::$cartManager->cartSaver();
+                
+                $cartSaver->update($cartInMySql);
+    
+                $cart = $cartInMySql;
 
-                $cartByMySQL->addOrderLine($orderLine);
             }
-            $cart = $cartByMySQL;
 
-            self::$manager->orderSaver()->update($cart);
+
         }
-        
+        else if(isset($cartInCookies) && !$isConneted)
+        {
+            $cart = $cartInCookies;
+        }
+        else if(!isset($cartInCookies) && $isConneted)
+        {
+            
+            if(!isset($cartInMySql))
+            {
+                self::$cartManager->setCartSaver(new MySQL(ConnectDB::getInstanceToPDO()));
+
+                $cartSaver = self::$cartManager->cartSaver();
+
+                $cart = new Cart([
+                    "customer"=> $customer
+                ]);
+
+                $cartSaver->add($cart);
+
+                $cart = $cartSaver->get($customer);
+            }
+            else
+            {
+                $cart = $cartInMySql;
+            }
+
+        }
         return $cart;
-
-        
-
     }
 
-
-    public static function modifierCart(Order $cart,?Customer $customer,array $dataRequest, string $operation)
+    public static function update(Cart $cart, array $data)
     {
-        ksort($dataRequest);
+        ksort($data);
+        unset($data['submit']);
+        $data['id']= 0;
 
-        $data = $dataRequest;
-
-        if($operation==='delete')
+        if(!empty($data['deleteItem']))
         {
-            self::deleteCart($data,$cart);
-        }
-        else if($operation==='update')
-        {   
-            self::updateCart($data,$cart);
+            $data["item"] = (new ItemManager(ConnectDB::getInstanceToPDO()))->getOnce($data["deleteItem"]);
+            $orderLine = new OrderLine($data);
+            $cart->deleteOrderLine($orderLine,true);
+
         }
         else
         {
-            self::addCart($data,$cart);
-        }
+            $data["item"] = (new ItemManager(ConnectDB::getInstanceToPDO()))->getOnce($data["item"]);
+            
+            $orderLine = new OrderLine($data);
 
-
-        self::$manager->orderSaver()->update($cart);
-
-        if(!Connect::typeConnectionVerify('customer'))
-        {
-            self::$manager= new OrderManager(new CookiesSaveOrder());
-            $cart = self::$manager->orderSaver()->getCart();
-            return;
+            try
+            
+            {
+                $cart->addOrderLine($orderLine);
+                
+            }
+            catch(CartException)
+            {
+                $orderLineFound = $cart -> foundOrderLine($orderLine);
+                $orderLineFound ->setQuantity($orderLine->quantity());
+            }
+            
+            
         }
         
-        self::$manager= new OrderManager(new MySQLSaveOrder(ConnectDB::getInstanceToPDO())); 
-
-        $cart = self::$manager->orderSaver()->getCartByCustomerIfExist($customer);
-
-    }
-
-    private static function deleteCart(array $data, Order $cart)
-    {
-
-        $data['id'] = $data['delete'];
-        unset($data['delete']);
-        $itemManager = new ItemManager(ConnectDB::getInstanceToPDO());
-        $data['item'] = $itemManager->getOnce($data['item']);
-        $data['order'] = $cart;
-        $orderLine = new OrderLine($data);
-
-        if (!$cart->orderLineExist($orderLine)) {
-            return;
-        }
-
+        self::$cartManager = new CartManager(new Cookies);
+        
+        $cartSaver = self::$cartManager->cartSaver();
+        
         if(Connect::typeConnectionVerify('customer'))
         {
-            $orderLineManager = new OrderLineManager(ConnectDB::getInstanceToPDO());
-            $orderLineManager->delete($orderLine);
+            self::$cartManager= new CartManager(new MySQL(ConnectDB::getInstanceToPDO()));
+            
+            $cartSaver = self::$cartManager->cartSaver();
         }
+        $cartSaver->update($cart);
 
-        $cart->unsetOrderLine($orderLine,true);
-
-        return;
-
-    }
-
-    private static function updateCart(array $data,Order $cart)
-    {
-        $itemManager = new ItemManager(ConnectDB::getInstanceToPDO());
-        $data['item'] = $itemManager->getOnce($data['item']);
-        $data['order'] = $cart;
-        $orderLine = new OrderLine($data);
-        
-        try{
-            $cart->setOrderLine($orderLine);
-        }
-        catch(OrderLineException $e){
-            $cart->addOrderLine($orderLine);
-        }
-
-
-    }
-
-    private static function addCart(array $data,Order $cart)
-    {
-        $itemManager = new ItemManager(ConnectDB::getInstanceToPDO());
-        $data['item'] = $itemManager->getOnce($data['item']);
-        $data['order'] = $cart;
-        
-        $orderLine = new OrderLine($data);
-
-        try{
-            $cart->addOrderLine($orderLine);
-        }
-        catch(OrderLineException $e){
-            $cart->setOrderLine($orderLine);
-        }
     }
 }

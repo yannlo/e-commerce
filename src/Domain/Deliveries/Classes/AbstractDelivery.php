@@ -4,24 +4,36 @@ namespace App\Domain\Delivery\Classes;
 
 use App\Domain\Address\Address;
 use App\Models\Tools\Classes\ConnectDB;
+use App\Domain\Orders\OrderByDistributor;
 use App\Models\Address\CommonListManager;
-use App\Domain\Delivery\Classes\Exceptions\DeliveryException;
 use App\Domain\Delivery\Interfaces\DeliveryInterface;
+use App\Domain\Delivery\Classes\Exceptions\DeliveryException;
 
 Abstract class AbstractDelivery implements DeliveryInterface
 {
-    protected Address $address;
+    use \App\Domain\Tools\Hydration;
 
-    public function __construct(Address $address)
+    protected Address $address;
+    protected OrderByDistributor $orderByDistributor;
+
+    public function __construct(array $data)
     {
-        $this->setAddress($address);
+        $this->hydrate($data);
     }
     
+    // GETTERS
     public function address():Address
     {
         return $this->address;
     }
 
+    public function OrderByDistributor():OrderByDistributor
+    {
+        return $this->orderByDistributor;
+    }
+
+
+    // SETTERS
     public function setAddress($address):void
     {
         if(!is_a($address,get_class(new Address([]))))
@@ -46,4 +58,16 @@ Abstract class AbstractDelivery implements DeliveryInterface
 
         $this->address = $address;
     }
+
+    public function setOrderByDistributor($orderByDistributor): void
+    {
+        if(!is_a($orderByDistributor,get_class(new OrderByDistributor([]))))
+        {
+            throw new DeliveryException('Argument is not a OrderByDistributor ',301);
+            return;
+        }
+
+        $this->orderByDistributor = $orderByDistributor;
+    }
+    
 }

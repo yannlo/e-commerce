@@ -30,7 +30,7 @@ Class CustomerViews implements AccountInterface, GeneralViewsInterface
         </p>
         <?php endif; ?>
         <p>
-            <a href="/item/list">liste des articles</a>
+            <a href="/item">liste des articles</a>
         </p>
         <?php if(Connect::TypeConnectionVerify("customer")):?>
         <p>

@@ -11,7 +11,7 @@ class LoginVerification{
 
 
     public function __construct(private \PDO $db){
-        $this->accountType =["distributer","customer"];
+        $this->accountType =["distributor","customer"];
     }
 
 

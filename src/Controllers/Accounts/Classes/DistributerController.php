@@ -5,88 +5,88 @@ namespace App\Controllers\Accounts\Classes;
 
 use App\Controllers\Tools\Connect;
 use App\Models\Tools\Classes\ConnectDB;
-use App\Models\Accounts\DistributerManager;
-use App\Domain\Accounts\Classes\Distributer;
+use App\Models\Accounts\DistributorManager;
+use App\Domain\Accounts\Classes\Distributor;
 use App\Models\Tools\Classes\LoginVerification;
-use App\Views\Accounts\Classes\DistributerViews;
+use App\Views\Accounts\Classes\DistributorViews;
 use App\Controllers\Accounts\Interfaces\AccountControllerInterface;
 use App\Models\Tools\Classes\Exceptions\LoginVerificationException;
 
-class DistributerController implements AccountControllerInterface
+class DistributorController implements AccountControllerInterface
 {
     public static function  index(): void
     {
-        if(!Connect::typeConnectionVerify('distributer')){
+        if(!Connect::typeConnectionVerify('distributor')){
             self::redirectory('login');
         }
-        DistributerViews::index();
+        DistributorViews::index();
     }
 
     public static function login(): void
     {
-        if(!Connect::typeConnectionVerify('distributer')){
+        if(!Connect::typeConnectionVerify('distributor')){
             self::redirectory('index');
         }
 
         if(empty($_POST)){
-            DistributerViews::login();
+            DistributorViews::login();
             return;
         }
 
-        $distributer = new Distributer($_POST);
+        $distributor = new Distributor($_POST);
         
         $loginVerification = new LoginVerification(ConnectDB::getInstanceToPDO());
 
         try
         {
-            $distributer = $loginVerification->account_verify($distributer);
+            $distributor = $loginVerification->account_verify($distributor);
         }
         catch(LoginVerificationException $e)
         {
             $data['error'] = $e->getMessage();
-            DistributerViews::login($data);
+            DistributorViews::login($data);
             return;
         }
 
-        $data =["id"=>$distributer->id(),"nameDistrib"=>$distributer->nameDistrib(),"email"=>$distributer->email()];
-        Connect::userConnection('distributer', $data);
+        $data =["id"=>$distributor->id(),"nameDistrib"=>$distributor->nameDistrib(),"email"=>$distributor->email()];
+        Connect::userConnection('distributor', $data);
         self::redirectory('index');
         
     }
 
     public static function signup(): void
     {
-        if(Connect::typeConnectionVerify('distributer')){
+        if(Connect::typeConnectionVerify('distributor')){
             self::redirectory('');
         }
 
         if(empty($_POST)){
-            DistributerViews::signup();
+            DistributorViews::signup();
             return;
         }
 
         if($_POST['password']!==$_POST['confirmation_password']){
-            DistributerViews::signup();
+            DistributorViews::signup();
             return;  
         }
 
-        $distributer = new Distributer($_POST);
-        $manager = new DistributerManager(ConnectDB::getInstanceToPDO());
-        $manager ->add($distributer);
+        $distributor = new Distributor($_POST);
+        $manager = new DistributorManager(ConnectDB::getInstanceToPDO());
+        $manager ->add($distributor);
         self::redirectory('login');
     }
 
     public static function account(): void
     {
-        if(!Connect::typeConnectionVerify('distributer')){
+        if(!Connect::typeConnectionVerify('distributor')){
             self::redirectory('login');
         }
 
-        $manager = new DistributerManager(ConnectDB::getInstanceToPDO());
+        $manager = new DistributorManager(ConnectDB::getInstanceToPDO());
         $data = Connect::getUser();
-        $distributer = $manager->getOnce($data['id']);
+        $distributor = $manager->getOnce($data['id']);
         
-        DistributerViews::account(["distributer" => $distributer]);
+        DistributorViews::account(["distributor" => $distributor]);
     }
 
     public static function logout(): void
