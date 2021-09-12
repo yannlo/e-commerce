@@ -9,7 +9,7 @@ use App\Views\Generals\Classes\TemplateViews;
 
 class OrderViews
 {
-    public static function Cart(Order $order)
+    public static function detail(Order $order)
     {
         $errors=[];
         if(!empty($_SESSION['error']))

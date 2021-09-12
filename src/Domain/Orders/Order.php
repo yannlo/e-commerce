@@ -15,7 +15,7 @@ final class Order extends AbstractOrder
 {
 
     //variables
-    private array $ordersByDistributor = [];
+    private array $ordersByDistributor=[];
     private int $status;
 
     // GETTERS    
@@ -55,7 +55,7 @@ final class Order extends AbstractOrder
      */
     public function setOrdersByDistributor(array $ordersByDistributor): void
     {
-        if (empty($orderLines))
+        if (empty($ordersByDistributor))
         {
             throw new OrderException('ordersByDistributer is empty',200);
             return;
@@ -103,7 +103,7 @@ final class Order extends AbstractOrder
      *
      * @return void
      */
-    private function updateStatus(): void
+    public function updateStatus(): void
     {
         $stateList = array();
         foreach($this->ordersByDistributor() as $orderByDistributor)
@@ -132,46 +132,4 @@ final class Order extends AbstractOrder
         return $cost;
     }
 
-}
-
-//private function OrderLineByItemDistributor(array $data)
-{
-    $data["order"]= $this;
-    unset($data['orderLines']);
-    
-    foreach($this->orderLines as $orderLine)
-    {
-        if(empty($this->ordersByDistributor))
-        {
-            $this-> addOrderByDistributor($data);
-            end($this-> ordersByDistributor)->addOrderLine($orderLine);
-            continue;
-        }
-
-        
-        $is_include= false;
-        foreach($this->ordersByDistributor as  $orderByDistributor)
-        {                
-            try
-            {
-                $orderByDistributor->addOrderLine($orderLine);
-                $is_include= true;
-                break;
-            }
-            catch(OrderByDistributorException $e)
-            {
-                continue;
-            }
-
-        }
-
-        if(!$is_include)
-        {
-            $this-> addOrderByDistributor($data);
-            end($this-> ordersByDistributor)->addOrderLine($orderLine);
-        }
-
-
-
-    }
 }

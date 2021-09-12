@@ -39,6 +39,12 @@ $router->map('POST','/cart[slh]',function(){
     CartController::index();
 });
 
+$router->map('GET','/cart/confirm[slh]',function(){
+
+    http_response_code(200);
+    CartController::confirm();
+});
+
 $router->map('GET','/cart/confirm/[a:page][slh]',function($page){
 
     if(!in_array($page,['address','delivery','payment'])){

@@ -4,19 +4,21 @@ namespace App\Models\Orders\Classes\SaveCarts;
 
 use App\Domain\Orders\Cart;
 use App\Domain\Accounts\Classes\Customer;
+use App\Models\Orders\Classes\CartManager;
 use App\Models\Orders\Interfaces\CartCRUD;
 use App\Domain\Orders\Exceptions\CartException;
 use App\Models\Orders\Classes\OrderLineManager;
+use App\Models\Orders\Classes\InMySQL\CartInMySQL;
 use App\Models\Orders\Classes\Exceptions\SaveCarts\MySQLException;
 
 class MySQL implements CartCRUD
 {
-    private CartInMySql $cartInMySql;
+    private CartManager $cartManager;
     private OrderLineManager $orderLineManager;
 
     public function __construct(private \PDO $db)
     {
-        $this->cartInMySql = new CartInMySql($this->db);
+        $this->cartManager = new CartManager($this->db);
         $this -> orderLineManager = new OrderLineManager($this->db);
 
     }
@@ -32,13 +34,13 @@ class MySQL implements CartCRUD
      */
     public function get(?Customer $customer): ?Cart
     {
-        if(!$this->cartInMySql->cartExist($customer))
+        if(!$this->cartManager->cartExist($customer))
         {
             throw new MySQLException('this customer has not cart',400);
             return null;
         }
 
-        $cart = $this->cartInMySql-> get($customer);
+        $cart = $this->cartManager-> get($customer);
 
         try {
             $cart->setOrderLines($this->orderLineManager->getByCart($cart));
@@ -61,9 +63,9 @@ class MySQL implements CartCRUD
      */
     public function add(Cart $cart): void
     {
-        $this->cartInMySql->add($cart);
+        $this->cartManager->add($cart);
 
-        $cartAdded = $this->cartInMySql->get($cart->customer());
+        $cartAdded = $this->cartManager->get($cart->customer());
 
         if(!empty($cart->orderLines()))
         {
@@ -154,7 +156,7 @@ class MySQL implements CartCRUD
             $this->orderLineManager->delete($orderLine);
         }
 
-        $this->cartInMySql->delete($cart);
+        $this->cartManager->delete($cart);
     }
     
     /**
@@ -167,6 +169,6 @@ class MySQL implements CartCRUD
      */
     public function cartExist(Customer $customer): bool
     {   
-        return $this->cartInMySql->cartExist($customer);;
+        return $this->cartManager->cartExist($customer);;
     }
 }

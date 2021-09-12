@@ -3,24 +3,33 @@
 namespace App\Controllers\Orders;
 
 use App\Domain\Orders\Cart;
+use App\Domain\Orders\Order;
 use App\Domain\Orders\OrderLine;
 use App\Models\Items\ItemManager;
 use App\Controllers\Tools\Connect;
 use App\Models\Tools\Classes\ConnectDB;
 use App\Domain\Accounts\Classes\Customer;
-use App\Models\Orders\Classes\CartManager;
+use App\Domain\Orders\OrderByDistributor;
 use App\Models\Orders\Classes\SaveCarts\MySQL;
 use App\Domain\Orders\Exceptions\CartException;
 use App\Models\Orders\Classes\SaveCarts\Cookies;
+use App\Models\Orders\Classes\Builders\CartBuider;
 
 
 class CartAction
 {
-    private static CartManager $cartManager;
-
+    private static CartBuider $cartManager;
+    
+    /**
+     * initialization
+     * 
+     * permit to initialize cart for the customer
+     *
+     * @return Cart
+     */
     public static function initialization(): Cart
     {
-        self::$cartManager = new CartManager(new Cookies);
+        self::$cartManager = new CartBuider(new Cookies);
 
         $cartSaver = self::$cartManager->cartSaver();
 
@@ -57,7 +66,7 @@ class CartAction
                 
             $cartSaver->add($cart);
 
-            $cart = $cartSaver->get($customer);
+            $cart = $cartSaver->get();
             
         }
         else if(isset($cartInCookies) && $isConneted)
@@ -133,19 +142,29 @@ class CartAction
         }
         return $cart;
     }
-
-    public static function update(Cart $cart, array $data)
+    
+    /**
+     * update
+     * 
+     * use to update cart orderLine
+     *
+     * @param  Cart $cart
+     * @param  array $data
+     * @return void
+     */
+    public static function update(Cart $cart, array $data): void
     {
         ksort($data);
         unset($data['submit']);
         $data['id']= 0;
-
+        $data['cart']= $cart;
+        
         if(!empty($data['deleteItem']))
         {
             $data["item"] = (new ItemManager(ConnectDB::getInstanceToPDO()))->getOnce($data["deleteItem"]);
             $orderLine = new OrderLine($data);
             $cart->deleteOrderLine($orderLine,true);
-
+            
         }
         else
         {
@@ -168,17 +187,88 @@ class CartAction
             
         }
         
-        self::$cartManager = new CartManager(new Cookies);
+        self::$cartManager = new CartBuider(new Cookies);
         
         $cartSaver = self::$cartManager->cartSaver();
         
         if(Connect::typeConnectionVerify('customer'))
         {
-            self::$cartManager= new CartManager(new MySQL(ConnectDB::getInstanceToPDO()));
+            self::$cartManager= new CartBuider(new MySQL(ConnectDB::getInstanceToPDO()));
             
             $cartSaver = self::$cartManager->cartSaver();
         }
         $cartSaver->update($cart);
 
+    }
+    
+    /**
+     * convertToOrder
+     * 
+     * permit to convert cart to order
+     *
+     * @param  Cart $cart
+     * @return Order
+     */
+    public static function convertToOrder(Cart $cart): Order
+    {   
+        $order = new Order([
+            "customer" => $cart->customer()
+        ]);
+
+        $ordersByDistributor= [];
+        foreach($cart->orderLines() as $orderLine)
+        {
+            if(empty($ordersByDistributor))
+            {
+                $orderByDistributor =new OrderByDistributor([
+                    "order" => $order,
+                    "customer" => $order-> customer()
+                ]);
+    
+                $orderLine ->setOrderByDistributor($orderByDistributor);
+                $orderByDistributor->addOrderLine($orderLine);
+                    
+                $cart->deleteOrderLine($orderLine,true);
+    
+                $ordersByDistributor[] = $orderByDistributor;
+                
+                continue;
+            }
+
+            foreach($ordersByDistributor as $orderByDistributor)
+            {
+                if($orderByDistributor->distributor() !== $orderLine->item()->distributor())
+                {
+                    continue;
+                }
+                $orderLine ->setOrderByDistributor($orderByDistributor);
+                
+                $orderByDistributor->addOrderLine($orderLine);
+
+                $cart->deleteOrderLine($orderLine,true);
+                break;
+            }
+
+            if(isset($orderLine))
+            {
+                $orderByDistributor =new OrderByDistributor([
+                    "order" => $order,
+                    "customer" => $order-> customer()
+                ]);
+                
+                $orderLine ->setOrderByDistributor($orderByDistributor);
+                $orderByDistributor->addOrderLine($orderLine);
+                
+                $cart->deleteOrderLine($orderLine,true);
+
+                $ordersByDistributor[] = $orderByDistributor;
+            }
+
+        }
+
+        $order->setOrdersByDistributor($ordersByDistributor);
+
+        return $order ;
+    
     }
 }

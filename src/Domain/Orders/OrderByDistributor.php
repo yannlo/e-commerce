@@ -30,6 +30,8 @@ final class OrderByDistributor extends cart
     const FINISH = 2;
     const CANCELED = 3;
 
+    const STATUS_LIST = [self::BEING_PROCESSED, self::BEING_DELIVERED, self::FINISH, self::CANCELED];
+
     // GETTERS    
     /**
      * order
@@ -152,13 +154,15 @@ final class OrderByDistributor extends cart
     
     public function setStatus($status): void
     {
-        if(!in_array( $status, [ self::BEING_PROCESSED, self::BEING_DELIVERED, self::FINISH] ))
+        if(!in_array( $status, self::STATUS_LIST ))
         {
             throw new OrderByDistributorException('Invalid status',100);
             return;
         }
 
         $this->status = $status;
+
+        $this->order()->updateStatus();
 
     }
 

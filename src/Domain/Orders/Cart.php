@@ -83,8 +83,6 @@ class Cart extends AbstractOrder
             return;
         }
 
-        $orderLine->setCart($this);
-
         $this->orderLines[] = $orderLine;
     }
     

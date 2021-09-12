@@ -29,4 +29,11 @@ class CartController
 
     }
 
+    public static function confirm():void
+    {
+        $cart = CartAction::initialization();
+        $order = CartAction::convertToOrder($cart);
+
+    }
+
 }
