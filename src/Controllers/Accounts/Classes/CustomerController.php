@@ -9,7 +9,6 @@ use App\Models\Accounts\CustomerManager;
 use  App\Domain\Accounts\Classes\Customer;
 use  App\Views\Accounts\Classes\CustomerViews;
 use  App\Models\Tools\Classes\LoginVerification;
-use App\Controllers\Tools\Exceptions\ConnectException;
 use App\Models\Tools\Classes\Exceptions\LoginVerificationException;
 use  App\Controllers\Accounts\Interfaces\AccountControllerInterface;
 

@@ -2,6 +2,8 @@
 
 namespace App\Views\Items;
 
+use App\Controllers\Tools\Connect;
+use App\Domain\Items\Classes\Item;
 use App\Domain\Tools\NumberFormat;
 use App\Controllers\Tools\URLFormat;
 use App\Views\Generals\Classes\TemplateViews;
@@ -26,7 +28,7 @@ class itemViews
                 <strong>Nom du distributor:</strong> <?= $distributor-> nameDistrib() ?>
             </p>
 
-            <?php if(empty($_SESSION['distributor']) || !isset($_SESSION['distributor'])):?>
+            <?php if(Connect:: typeConnectionVerify('customer')):?>
                 <h2>Commander un article</h2>
             <form action="/cart" method="post">
                 <p>
@@ -37,14 +39,14 @@ class itemViews
             </form>
             <?php endif ?>
 
-            <?php if(!empty($_SESSION['distributor'])&&isset($_SESSION['distributor'])):?>
+            <?php if(Connect:: typeConnectionVerify('distributor')):?>
             <p>
                 <a href="/item/delete?id=<?= $item-> id()?>">suprimerl'aritcle</a>
             </p>
             <?php endif ?>
 
             <p>
-                <a href="/item/list">retour</a>
+                <a href="/item">retour</a>
             </p>
         </div>
         <?php
@@ -61,12 +63,6 @@ class itemViews
         <h1> Bienvenue sur la page abidjan-style </h1>
         <div>
             <h2>Liste des articles</h2>
-
-            <?php if(!empty($_SESSION['distributor']) && isset($_SESSION['distributor'])):?>
-            <p>
-                <a href="/item/add">Ajouter un article</a>
-            </p>
-            <?php endif ?>
 
             <?php if($data===[]): ?>
             <p>
@@ -116,5 +112,19 @@ class itemViews
         $content= ob_get_clean();
 
         TemplateViews::basicTemplate(title: "Ajouter un article | ".\DOMAIN_NAME ,content:$content);
+    }
+
+    public static function listFormat(Item $item) : string
+    {
+        ob_start();
+        ?>
+        <p>
+            <strong>Nom de l'article:</strong> <?= $item-> itemName() ?> <br />
+            <strong>Prix de l'article:</strong> <?= NumberFormat::priceFormat($item->price()) ?> <br />
+            <a href="/item/<?= URLFormat::itemFormat($item)?>">detail >></a>
+        </p>
+        <?php
+        return ob_get_clean(); 
+
     }
 }

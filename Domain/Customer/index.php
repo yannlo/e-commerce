@@ -1,10 +1,10 @@
 <?php 
+session_name("Abj-Style\customer");
 session_start();
 
 require_once '../../vendor/autoload.php';
 require_once '../../config/config.php';
 require_once '../../config/config_db.php';
-
 
 
 

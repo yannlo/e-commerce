@@ -1,4 +1,5 @@
 <?php 
+session_name("Abj-Style\distributor");
 session_start();
 
 require_once '../../vendor/autoload.php';

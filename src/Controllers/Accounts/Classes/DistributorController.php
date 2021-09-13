@@ -3,6 +3,7 @@
 namespace App\Controllers\Accounts\Classes;
 
 
+use App\Models\Items\ItemManager;
 use App\Controllers\Tools\Connect;
 use App\Models\Tools\Classes\ConnectDB;
 use App\Models\Accounts\DistributorManager;
@@ -98,6 +99,20 @@ class DistributorController implements AccountControllerInterface
     public static function redirectory($page){
         header('Location: /'.$page);
         exit();
+    }
+
+    public static function items(): void
+    {
+        if(!Connect::typeConnectionVerify('distributor')){
+            self::redirectory('login');
+        }
+        $distributor = new Distributor(Connect::getUser());
+        
+        $itemManager = new ItemManager(ConnectDB::getInstanceToPDO());
+        
+        $data['items'] = $itemManager -> getByDistributor($distributor);
+        
+        DistributorViews::items($data);
     }
 
 

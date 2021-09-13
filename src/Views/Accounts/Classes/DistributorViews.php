@@ -2,6 +2,7 @@
 
 namespace App\Views\Accounts\Classes;
 
+use App\Views\Items\ItemViews;
 use App\Views\Generals\Classes\TemplateViews;
 use App\Views\Accounts\Interfaces\AccountInterface;
 use App\Views\Generals\Interfaces\GeneralViewsInterface;
@@ -17,7 +18,7 @@ class DistributorViews implements AccountInterface, GeneralViewsInterface
         ?>
         <h1> Bienvenue sur la page distributeur abidjan-style </h1>
         <p>
-            <a href="/item">liste des article</a> <br/>
+            <a href="/items">liste des article</a> <br/>
             <a href="/account">Informaion de compte</a> <br/>
             <a href="/logout">Deconnexion</a>
         </p>
@@ -62,6 +63,7 @@ class DistributorViews implements AccountInterface, GeneralViewsInterface
 
     public static function signup(array $data=[]): void
     {
+        
         ob_start();
         ?>
         <h1> inscrivez vous et devenez distributeur sur abidjan-style </h1>
@@ -102,7 +104,7 @@ class DistributorViews implements AccountInterface, GeneralViewsInterface
         $distributor =$data['distributor'];
         ob_start();
         ?>
-        <h1>Imformation de compte distributeur </h1>
+        <h1>Information de compte distributeur</h1>
         <p>
             <strong>Identifiant:</strong> <?= $distributor->id()?> <br/>
             <strong>Nom:</strong> <?= $distributor->nameDistrib()?> <br/>
@@ -116,5 +118,26 @@ class DistributorViews implements AccountInterface, GeneralViewsInterface
         $content= ob_get_clean();
 
         TemplateViews::basicTemplate(title: "information de compte | ".\DOMAIN_NAME ,content:$content);
+    }
+
+    public static function items(array $data=[]): void
+    {
+        $items = $data['items'];
+        ob_start();
+        ?>
+        <h1>Liste des items vendu</h1>
+        <div>
+            <a href="/item/add">Ajouter un article</a>
+
+        <?php foreach ($items as $item):?>
+            <?= ItemViews::ListFormat($item) ?>
+        <?php endforeach ?>
+
+        </div>
+        <?php
+        $content = ob_get_clean();
+
+        TemplateViews::basicTemplate(title: "listes des articles | ".\DOMAIN_NAME ,content:$content);
+
     }
 }
