@@ -24,7 +24,7 @@ class DistributorController implements AccountControllerInterface
 
     public static function login(): void
     {
-        if(!Connect::typeConnectionVerify('distributor')){
+        if(Connect::typeConnectionVerify('distributor')){
             self::redirectory('index');
         }
 
