@@ -4,9 +4,9 @@ namespace App\Controllers\Orders;
 
 
 
-class OrderController
+class OrderByDistributorController
 {
-    
+
     /**
      * index
      * 
@@ -15,6 +15,19 @@ class OrderController
      * @return void
      */
     public static function index(): void
+    {
+
+    }
+
+    /**
+     * inProcess
+     *
+     * get order not complet
+     * 
+     * @param  
+     * @return void
+     */
+    public static function inProcess(): void
     {
 
     }

@@ -12,20 +12,60 @@ use App\Models\Accounts\DistributorManager;
 use App\Controllers\Accounts\Classes\DistributorController;
 
 class ItemController 
-{   
-    public static function list(): void
+{       
+    /**
+     * index
+     * 
+     * print all article list
+     *
+     * @return void
+     */
+    public static function index(): void
     {
         $manager = new ItemManager(ConnectDB::getInstanceToPDO());
         $data = $manager->getAll();
         ItemViews::list($data);
     }
 
-    public static function item(int $id, string $slug): void
+    
+    /**
+     * distributors
+     * 
+     * print all articles list by distributor
+     *
+     * @return void
+     */
+    public static function distributors() :void
+    {
+
+    }
+    
+    /**
+     * search
+     * 
+     * permit to found article in database
+     *
+     * @return void
+     */
+    public static function search() :void
+    {
+
+    }
+    
+    /**
+     * item
+     * 
+     * permit to get specific article page
+     *
+     * @param  int $id
+     * @param  string $slug item name in url format
+     * @param  null|string $section
+     * @return void
+     */
+    public static function item(int $id, string $slug,?string $section = null): void
     {
 
         $itemManager = new ItemManager(ConnectDB::getInstanceToPDO());
-
-        $distributorManager = new DistributorManager(ConnectDB::getInstanceToPDO());
 
         $item = $itemManager->getOnce($id);
         $distributor = $item->distributor();
@@ -43,6 +83,14 @@ class ItemController
         ItemViews::item($data);
     }
 
+    
+    /**
+     * add
+     * 
+     * add new item in database
+     *
+     * @return void
+     */
     public static function add(): void
     {
         if(!Connect::typeConnectionVerify('distributor'))

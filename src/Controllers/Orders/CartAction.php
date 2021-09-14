@@ -47,7 +47,7 @@ class CartAction
 
             $cartSaver = self::$cartManager->cartSaver();
 
-            $customer = new Customer(Connect::getUser());
+            $customer =Connect::getUser();
 
             if($cartSaver->cartExist($customer))
             {

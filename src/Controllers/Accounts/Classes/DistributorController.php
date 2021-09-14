@@ -14,15 +14,101 @@ use App\Controllers\Accounts\Interfaces\AccountControllerInterface;
 use App\Models\Tools\Classes\Exceptions\LoginVerificationException;
 
 class DistributorController implements AccountControllerInterface
-{
+{    
+
+
+    /**
+     * index
+     * 
+     * print all distributor list
+     *
+     * @return void
+     */
     public static function  index(): void
+    {
+
+
+    }
+
+    
+    /**
+     * dashboard
+     * 
+     * permit to seen global productivity 
+     *
+     * @return void
+     */
+    public static function dashboard(): void
+    {
+
+    }
+    
+    /**
+     * search
+     *
+     * permit to found distributor
+     * 
+     * @return void
+     */
+    public static function search(): void
+    {
+
+    }
+
+    
+    /**
+     * preview
+     *
+     * @param  null|string $section
+     * @return void
+     */
+    public static function preview(?string $section=null): void
+    {
+        
+    }
+
+    
+    /**
+     * distributor
+     * 
+     * get specific distributor
+     *
+     * @param  int $id
+     * @param  string $slugs distributor name in url format
+     * @param  null|string $section
+     * @return void
+     */
+    public static function distributor(int $id,string $slugs, ?string $section=null): void
+    {
+        
+    }
+    
+    /**
+     * account
+     * 
+     * permit CRUD specific account information
+     *
+     * @param  null|string $section
+     * @return void
+     */
+    public static function account(?string $section = null): void
     {
         if(!Connect::typeConnectionVerify('distributor')){
             self::redirectory('login');
         }
-        DistributorViews::index();
-    }
 
+        $distributor  = Connect::getUser();
+        
+        DistributorViews::account(["distributor" => $distributor]);
+    }
+    
+    /**
+     * login
+     *
+     * permit to connection to distributor
+     * 
+     * @return void
+     */
     public static function login(): void
     {
         if(Connect::typeConnectionVerify('distributor')){
@@ -49,12 +135,18 @@ class DistributorController implements AccountControllerInterface
             return;
         }
 
-        $data =["id"=>$distributor->id(),"nameDistrib"=>$distributor->nameDistrib(),"email"=>$distributor->email()];
-        Connect::userConnection('distributor', $data);
+        Connect::userConnection('distributor', $distributor->id());
         self::redirectory('index');
         
     }
-
+    
+    /**
+     * signup
+     *
+     * permit distributor inscription
+     * 
+     * @return void
+     */
     public static function signup(): void
     {
         if(Connect::typeConnectionVerify('distributor')){
@@ -76,20 +168,14 @@ class DistributorController implements AccountControllerInterface
         $manager ->add($distributor);
         self::redirectory('login');
     }
-
-    public static function account(): void
-    {
-        if(!Connect::typeConnectionVerify('distributor')){
-            self::redirectory('login');
-        }
-
-        $manager = new DistributorManager(ConnectDB::getInstanceToPDO());
-        $data = Connect::getUser();
-        $distributor = $manager->getOnce($data['id']);
-        
-        DistributorViews::account(["distributor" => $distributor]);
-    }
-
+    
+    /**
+     * logout
+     * 
+     * permit to disconnected distributor
+     *
+     * @return void
+     */
     public static function logout(): void
     {
         session_destroy();
@@ -100,20 +186,4 @@ class DistributorController implements AccountControllerInterface
         header('Location: /'.$page);
         exit();
     }
-
-    public static function items(): void
-    {
-        if(!Connect::typeConnectionVerify('distributor')){
-            self::redirectory('login');
-        }
-        $distributor = new Distributor(Connect::getUser());
-        
-        $itemManager = new ItemManager(ConnectDB::getInstanceToPDO());
-        
-        $data['items'] = $itemManager -> getByDistributor($distributor);
-        
-        DistributorViews::items($data);
-    }
-
-
 }

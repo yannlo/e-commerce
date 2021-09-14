@@ -25,16 +25,16 @@ class DistributorManager
     {
         $request = $this -> db -> prepare("SELECT * FROM distributors  WHERE id = :id");
         try{
-        $request ->execute(array(
-            "id" => htmlspecialchars($id)
-        ));
-        return new Distributor($request->fetch(\PDO::FETCH_ASSOC));
+            $request ->execute(array(
+                "id" => htmlspecialchars($id)
+            ));
         }
         catch(\PDOException $e)
         {
             echo $e -> getMessage();
             return false;
         }
+        return new Distributor($request->fetch(\PDO::FETCH_ASSOC));
     }
 
 
@@ -42,18 +42,18 @@ class DistributorManager
     {
         $request = $this -> db -> prepare("SELECT * FROM items  WHERE id = :id");
         try{
-        $request ->execute(array(
-            "id" => htmlspecialchars($item->id())
-        ));
+            $request ->execute(array(
+                "id" => htmlspecialchars($item->id())
+            ));
 
-        return $this->getOnce($request->fetch()['distributor']);
-        
+            
         }
         catch(\PDOException $e)
         {
             echo $e -> getMessage();
             return false;
         }
+        return $this->getOnce($request->fetch()['distributor']);
     }
 
     public function add(Distributor $distributor): bool

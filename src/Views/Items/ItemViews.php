@@ -27,8 +27,12 @@ class itemViews
                 <strong>Prix de l'article:</strong> <?= NumberFormat::priceFormat($item->price()) ?> <br/>
                 <strong>Nom du distributor:</strong> <?= $distributor-> nameDistrib() ?>
             </p>
+            <?php if(Connect:: typeConnectionVerify('distributor')):?>
+            <p>
+                <a href="/item/delete?id=<?= $item-> id()?>">suprimerl'aritcle</a>
+            </p>
 
-            <?php if(Connect:: typeConnectionVerify('customer')):?>
+            <?php else:?>
                 <h2>Commander un article</h2>
             <form action="/cart" method="post">
                 <p>
@@ -37,12 +41,8 @@ class itemViews
                     <input type="submit" name="submit" value="Ajouter au panier">
                 </p>
             </form>
-            <?php endif ?>
 
-            <?php if(Connect:: typeConnectionVerify('distributor')):?>
-            <p>
-                <a href="/item/delete?id=<?= $item-> id()?>">suprimerl'aritcle</a>
-            </p>
+
             <?php endif ?>
 
             <p>
@@ -52,7 +52,7 @@ class itemViews
         <?php
         $content= ob_get_clean();
 
-        TemplateViews::basicTemplate(title: $item->itemName()." | ".\DOMAIN_NAME ,content:$content);
+        TemplateViews::basicTemplate(title: $item->itemName().' - '.$item->distributor()->nameDistrib()." | ".\DOMAIN_NAME ,content:$content);
     }
 
     public static function list(array $data=[]): void

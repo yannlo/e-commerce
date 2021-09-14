@@ -1,6 +1,11 @@
 <?php
 
 namespace App\Controllers\Tools;
+use App\Models\Tools\Classes\ConnectDB;
+use App\Models\Accounts\CustomerManager;
+use App\Domain\Accounts\Classes\Customer;
+use App\Models\Accounts\DistributorManager;
+use App\Domain\Accounts\Classes\Distributor;
 use App\Controllers\Tools\Exceptions\ConnectException;
 
 Class Connect
@@ -10,8 +15,10 @@ Class Connect
         "distributor"
     );
 
+    private static CustomerManager $customerManager;
+    private static DistributorManager $distributorManager;
 
-    public static function userConnection(string $type,array $data)
+    public static function userConnection(string $type, int $id)
     {
         if(self::userConnectionVerify($type))
         {
@@ -25,19 +32,34 @@ Class Connect
         }
 
         $data['type'] = $type;
+        $data['id'] = $id;
         $_SESSION['account']=$data;
     }
 
-    public static function getUser()
+    public static function getUser(): null|Customer|Distributor
     {
-        if(!self::userConnectionVerify())
-        {
-            throw new ConnectException('user is not connected',00);
-            return;
-        }
+        // if(!self::userConnectionVerify())
+        // {
+        //     throw new ConnectException('user is not connected',00);
+        //     return null;
+        // }
 
-        $data = $_SESSION['account'];
-        unset($data['type']);
+        // $data = $_SESSION['account'];
+
+        $data = [
+            "id"=>6,
+            "type"=>"customer"
+        ];
+        switch($data['type'])
+        {
+            case 'customer':
+                self::$customerManager= new CustomerManager(ConnectDB::getInstanceToPDO());
+                return self::$customerManager->getOnce($data['id']);
+
+            case 'distributor':
+                self::$distributorManager= new DistributorManager(ConnectDB::getInstanceToPDO());
+                return self::$distributorManager->getOnce($data['id']);
+        }
         return $data;
     }
 

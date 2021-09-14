@@ -7,13 +7,13 @@ require_once '../../config/config.php';
 require_once '../../config/config_db.php';
 
 
-
-use App\Controllers\Tests\TestController;
 use  App\Controllers\Items\ItemController;
 use App\Controllers\Orders\CartController;
 use  App\Views\Generals\Classes\ErrorViews;
 use App\Controllers\Orders\OrderController;
+use App\Controllers\Generals\GeneralController;
 use  App\Controllers\Accounts\Classes\CustomerController;
+use App\Controllers\Accounts\Classes\DistributorController;
 
 
 $router = new AltoRouter();
@@ -23,70 +23,52 @@ $router -> addMatchTypes(['slh'=>'[/]?$']);
 // home
 $router->map('GET','/', function(){
     http_response_code(200);
-    CustomerController::index();
+    GeneralController::index();
     return;
 
 });
 
+// account
+$router->map('GET|POST','/account/[a:page][slh]',function($page){
+    http_response_code(200);
+    CartController::confirm($page);
+});
+
 // cart
-$router->map('GET','/cart[slh]',function(){
+$router->map('GET|POST','/cart[slh]',function(){
     http_response_code(200);
     CartController::index();
 });
 
-$router->map('POST','/cart[slh]',function(){
-    http_response_code(200);
-    CartController::index();
-});
-
-$router->map('GET','/cart/confirm[slh]',function(){
-
-    http_response_code(200);
-    CartController::confirm();
-});
-
-$router->map('GET','/cart/confirm/[a:page][slh]',function($page){
-
+$router->map('GET|POST','/cart/confirm/[a:page][slh]',function($page){
     if(!in_array($page,['address','delivery','payment'])){
         http_response_code(404);
         ErrorViews::error_404($page);
         return;
     }
-
     http_response_code(200);
-    CartController::$page();
+    CartController::confirm($page);
 });
 
-// test
-$router->map('GET','/test/[a:page][slh]', function($page){
-
-    if(!method_exists(new TestController,$page)){
-        http_response_code(404);
-        ErrorViews::error_404($page);
-        return;
-    }
-
-    http_response_code(200);
-    TestController::$page();
-
-    return;
-
-});
 
 // router items
-$router->map('GET','/item[slh]', function(){
+$router->map('GET','/items[slh]', function(){
     http_response_code(200);
-    ItemController::list();
+    ItemController::index();
 
 });
 
-
-$router->map('GET','/item/[*:slug]-[i:id][slh]', function($slug,$id){
+$router->map('GET','/items/[*:slug]-[i:id][slh]', function($slug, $id){
     ItemController::Item($id, $slug);
 });
 
 
-$router->map('GET','/item/[a:page][slh]',function($page){
+$router->map('GET|POST','/items/[*:slug]-[i:id]/[a:section][slh]', function($slug, $id, $section){
+    ItemController::Item($id, $slug, $section);
+});
+
+
+$router->map('GET|POST','/items/[a:page][slh]',function($page){
 
     if(!method_exists(new ItemController,$page)){
         http_response_code(404);
@@ -98,24 +80,42 @@ $router->map('GET','/item/[a:page][slh]',function($page){
     ItemController::$page();
 });
 
-$router->map('POST','/item/[a:page][slh]',function($page){
 
-    if(!in_array($page,['add','delete'])){
+// router distributor
+$router->map('GET','/distributors[slh]', function(){
+    http_response_code(200);
+    DistributorController::index();
+
+});
+
+$router->map('GET','/distributors/[a:page][slh]',function($page){
+
+    if(!method_exists(new DistributorController,$page)){
         http_response_code(404);
         ErrorViews::error_404($page);
         return;
     }
 
     http_response_code(200);
-    ItemController::$page();
+    DistributorController::$page();
+});
+
+
+$router->map('GET','/distributors/[*:slug]-[i:id][slh]', function($slug, $id){
+    DistributorController::distributor($id, $slug);
+});
+
+$router->map('GET|POST','/distributors/[*:slug]-[i:id]/[a:section][slh]', function($slug, $id, $section){
+    DistributorController::distributor($id, $slug, $section);
 });
 
 
 
-// route orders
-$router->map('GET','/order/[a:page][slh]',function($page){
 
-    if(!method_exists(new OrderController,$page) || in_array($page,['address','delivery','payment'])){
+// route orders
+$router->map('GET','/orders/[a:page][slh]',function($page){
+
+    if(!method_exists(new OrderController,$page)){
         http_response_code(404);
         ErrorViews::error_404($page);
         return;
@@ -125,23 +125,22 @@ $router->map('GET','/order/[a:page][slh]',function($page){
     OrderController::$page();
 });
 
-
-// router users pages
-$router->map('GET','/[a:page][slh]',function($page){
-    if(!method_exists(new CustomerController,$page)){
-        http_response_code(404);
-        ErrorViews::error_404($page);
-        return;
-    }
+$router->map('GET','/orders/[a:id][slh]',function($id){
 
     http_response_code(200);
-    CustomerController::$page();
-
+    OrderController::$id();
 });
 
-$router->map('POST','/[a:page][slh]',function($page){
+$router->map('GET|POST','/orders/[i:id]/[a:page][slh]',function($id,$page){
 
-    if(!in_array($page,['signup','login'])){
+    http_response_code(200);
+    OrderController::$id($page);
+});
+
+
+// router users pages
+$router->map('GET|POST','/[a:page][slh]',function($page){
+    if(!method_exists(new CustomerController,$page)){
         http_response_code(404);
         ErrorViews::error_404($page);
         return;

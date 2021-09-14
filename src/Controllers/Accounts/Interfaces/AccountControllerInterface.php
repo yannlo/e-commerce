@@ -2,9 +2,7 @@
 
 namespace App\Controllers\Accounts\Interfaces;
 
-use App\Controllers\Generals\GeneralControllerInterface;
-
-interface AccountControllerInterface extends GeneralControllerInterface
+interface AccountControllerInterface
 {
     public static function login(): void;
 
@@ -12,5 +10,5 @@ interface AccountControllerInterface extends GeneralControllerInterface
 
     public static function signup(): void;
 
-    public static function account(): void;
+    public static function account(?string $section): void;
 }

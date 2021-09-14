@@ -12,13 +12,21 @@ use  App\Models\Tools\Classes\LoginVerification;
 use App\Models\Tools\Classes\Exceptions\LoginVerificationException;
 use  App\Controllers\Accounts\Interfaces\AccountControllerInterface;
 
+/**
+ * CustomerController
+ * 
+ * get all customer page
+ */
 class CustomerController implements AccountControllerInterface
-{
-    public static function  index(): void
-    {
-        CustomerViews::index();
-    }
+{    
 
+    /**
+     * login
+     * 
+     * get login to connction in web site
+     *
+     * @return void
+     */
     public static function login(): void
     {
         if(Connect::TypeConnectionVerify('customer')){
@@ -47,17 +55,53 @@ class CustomerController implements AccountControllerInterface
             return;
         }
 
-        $data =[
-            "firstName"=>$customer->firstName(),
-            "lastName"=>$customer->lastName(),
-            "id"=>$customer-> id(),
-            'email'=>$customer->email()
-        ];
-
-        Connect::userConnection('customer', $data);
+        Connect::userConnection('customer',$customer-> id());
         self::homeRedirectory();
     }
+        
+    /**
+     * logout
+     * 
+     * logout page permit to disconnected to web site
+     *
+     * @return void
+     */
+    public static function logout(): void
+    {
+        session_destroy();
+        self::homeRedirectory();
 
+    }
+
+    /**
+     * account
+     *
+     * permit to CRUD customer information
+     * @param null|string $section
+     * @return void
+     */
+    public static function account( ?string $section=null): void
+    {
+        if(!Connect::typeConnectionVerify('customer')){
+            self::homeRedirectory();
+        }
+        
+        $data=[
+            "customer"=> Connect::getUser('customer')
+        ];
+
+        CustomerViews::account($data);
+        return;
+        
+    }
+
+    /**
+     * signup
+     *
+     * get sign-up page
+     * 
+     * @return void
+     */
     public static function signup(): void
     {
         if(Connect::typeConnectionVerify('customer')){
@@ -88,27 +132,7 @@ class CustomerController implements AccountControllerInterface
         
         self::homeRedirectory();
     }
-
-    public static function account(): void
-    {
-        if(!Connect::typeConnectionVerify('customer')){
-            self::homeRedirectory();
-        }
-        
-        $data=[
-            "customer"=>Connect::getUser('customer')
-        ];
-        CustomerViews::account($data);
-        return;
-        
-    }
-
-    public static function logout(): void
-    {
-        session_destroy();
-        self::homeRedirectory();
-
-    }
+    
 
     private static function homeRedirectory(){
         header('Location: / ');

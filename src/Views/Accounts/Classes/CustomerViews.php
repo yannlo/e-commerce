@@ -16,7 +16,7 @@ Class CustomerViews implements AccountInterface, GeneralViewsInterface
     public static function index(array $data=[]): void
     {   
         if(Connect::TypeConnectionVerify("customer")){
-            $customer =new Customer(Connect::getUser());
+            $customer =$data['customer'];
         }
         ob_start();
         ?>
